@@ -16,14 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const themeInitScript = `
-try {
-  var t = localStorage.getItem("tb-theme");
-  document.documentElement.classList.toggle("dark", t !== "light");
-} catch (e) {
-  document.documentElement.classList.add("dark");
-}
-`;
+const themeInitScript = `try{var t=localStorage.getItem("tb-theme");document.documentElement.classList.toggle("dark",t!=="light")}catch(e){document.documentElement.classList.add("dark")}`;
 
 export default async function RootLayout({
   children,
@@ -39,7 +32,7 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <head>
+      <head suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col">
