@@ -1,0 +1,86 @@
+import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
+import type { Role, UserDto } from "@/domain/types";
+import { usersRepo } from "@/infrastructure/repositories/users.repo";
+
+/** Profil koji vraća LMS /oauth/userinfo. */
+export interface LmsProfile {
+  sub: string;
+  email: string;
+  given_name: string;
+  family_name: string;
+  role: string;
+  university_id?: number;
+  faculty_id?: number;
+  university_short_name?: string;
+  faculty_short_name?: string;
+}
+
+export type LmsLinkResult = { ok: true; user: UserDto } | { ok: false; error: "email-conflict" };
+
+/**
+ * LMS role → app role. Prilagodi mapiranje po potrebi proizvoda.
+ * Vrati null za role koje ne smeju imati pristup.
+ */
+export function mapLmsRole(role: string): Role | null {
+  if (role === "student") return "user";
+  if (role === "assistant") return "admin";
+  return null;
+}
+
+function affiliationFields(p: LmsProfile) {
+  return {
+    universityId: Number.isInteger(p.university_id) ? (p.university_id as number) : null,
+    facultyId: Number.isInteger(p.faculty_id) ? (p.faculty_id as number) : null,
+    universityName: p.university_short_name?.slice(0, 100) ?? null,
+    facultyName: p.faculty_short_name?.slice(0, 100) ?? null,
+  };
+}
+
+export const ssoService = {
+  /**
+   * Nađi/poveži/kreiraj lokalnog usera za LMS profil:
+   * 1. lookup po lmsSubjectId (sub je primaran identitet posle prvog povezivanja),
+   * 2. pa po emailu — postojeći lokalni nalog se povezuje,
+   *    osim ako je već vezan za DRUGI LMS nalog (kolizija → odbij),
+   * 3. inače kreiraj novi nalog sa nasumičnom lozinkom (credentials prijava ne radi).
+   * Pripadnost i rola se osvežavaju pri SVAKOJ SSO prijavi.
+   */
+  async linkOrCreateFromLms(profile: LmsProfile): Promise<LmsLinkResult> {
+    const role = mapLmsRole(profile.role) ?? "user";
+    const affiliation = affiliationFields(profile);
+
+    const bySub = await usersRepo.findByLmsSubjectId(profile.sub);
+    if (bySub) {
+      await usersRepo.update(bySub.id, { role, ...affiliation });
+      return { ok: true, user: { ...bySub, role, ...affiliation } };
+    }
+
+    const byEmail = await usersRepo.findByEmail(profile.email);
+    if (byEmail) {
+      const existingSub = await usersRepo.getLmsSubjectId(byEmail.id);
+      if (existingSub && existingSub !== profile.sub) return { ok: false, error: "email-conflict" };
+      await usersRepo.update(byEmail.id, {
+        lmsSubjectId: profile.sub,
+        authProvider: "tapiz-lms",
+        role,
+        ...affiliation,
+      });
+      const { passwordHash, ...user } = byEmail;
+      void passwordHash;
+      return { ok: true, user: { ...user, role, ...affiliation } };
+    }
+
+    const user = await usersRepo.create({
+      firstName: profile.given_name,
+      lastName: profile.family_name,
+      email: profile.email,
+      passwordHash: await bcrypt.hash(randomBytes(32).toString("base64url"), 10),
+      role,
+      lmsSubjectId: profile.sub,
+      authProvider: "tapiz-lms",
+      ...affiliation,
+    });
+    return { ok: true, user };
+  },
+};
