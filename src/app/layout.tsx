@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const themeInitScript = `try{var t=localStorage.getItem("tb-theme");document.documentElement.classList.toggle("dark",t!=="light")}catch(e){document.documentElement.classList.add("dark")}`;
+const themeInitScript = `try{var t=localStorage.getItem("tb-theme");document.documentElement.classList.toggle("dark",t==="dark")}catch(e){}`;
 
 export default async function RootLayout({
   children,
