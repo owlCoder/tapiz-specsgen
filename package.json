@@ -12,7 +12,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
-    "@tapizlabs/ui": "^0.2.15",
+    "@tapizlabs/ui": "^0.2.16",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "mysql2": "^3.22.5",
