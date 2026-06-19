@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { isLmsManaged } from "@tapizlabs/identity";
 import type {
   ChangePasswordInput,
   RegisterInput,
@@ -32,7 +33,8 @@ export const usersService = {
       lastName: input.lastName,
     };
     if (input.email !== undefined && input.email !== existing.email) {
-      if (existing.authProvider !== "local") {
+      // Email je deo LMS projekcije — menja se isključivo u LMS-u (identity izvor pravila).
+      if (isLmsManaged(existing)) {
         throw new DomainError("Email naloga povezanog sa Tapiz LMS-om se menja u LMS-u");
       }
       const byEmail = await usersRepo.findByEmail(input.email);
@@ -48,7 +50,7 @@ export const usersService = {
   async changeMyPassword(userId: string, input: ChangePasswordInput): Promise<void> {
     const record = await usersRepo.findRecordById(userId);
     if (!record) throw new DomainError("Korisnik ne postoji");
-    if (record.authProvider !== "local") {
+    if (isLmsManaged(record)) {
       throw new DomainError("Lozinkom naloga povezanog sa Tapiz LMS-om upravlja LMS");
     }
     const valid = await bcrypt.compare(input.currentPassword, record.passwordHash);

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { Gear, Info, User } from "@tapizlabs/ui";
+import { useMemo, useState } from "react";
+import { Gear, Info, SegmentedTabs, User } from "@tapizlabs/ui";
 import { useI18n } from "@/i18n/I18nProvider";
 import type { AuthProvider, Role } from "@/domain/types";
 import { SidePanel } from "@/components/layout/SidePanel";
@@ -29,40 +29,43 @@ interface AppSettingsDialogProps {
 
 export function AppSettingsDialog({ open, onClose, user }: AppSettingsDialogProps) {
   const { dict } = useI18n();
-  const [active, setActive] = useState<SettingsSection>("account");
+  const [section, setSection] = useState<SettingsSection>("account");
 
-  const sections: { id: SettingsSection; label: string; icon: ReactNode }[] = useMemo(() => [
-    { id: "account", label: dict.settings.nav.account, icon: <User size={15} /> },
-    { id: "info", label: dict.settings.nav.info, icon: <Info size={15} /> },
-  ], [dict]);
+  // Reset sekcije pri otvaranju — tokom rendera (prevOpen šablon), ne kroz useEffect.
+  const [prevOpen, setPrevOpen] = useState(false);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) setSection("account");
+  }
+
+  const navItems = useMemo(
+    () => [
+      { id: "account", label: dict.settings.nav.account, icon: <User size={16} /> },
+      { id: "info", label: dict.settings.nav.info, icon: <Info size={16} /> },
+    ],
+    [dict.settings.nav.account, dict.settings.nav.info],
+  );
 
   return (
     <SidePanel
       open={open}
       onClose={onClose}
       title={dict.settings.title}
+      subtitle={section === "account" ? dict.settings.sections.account : dict.settings.sections.info}
       icon={<Gear size={18} />}
-      width="lg"
+      width="md"
     >
-      <div className="flex gap-1 border-b border-border pb-3 mb-5">
-        {sections.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => setActive(s.id)}
-            className={`flex cursor-pointer items-center gap-1.5 border-none px-3 py-1.5 text-xs font-semibold transition-colors ${
-              active === s.id
-                ? "bg-primary-300/10 text-primary-300"
-                : "bg-transparent text-txt-3 hover:text-txt-1"
-            }`}
-          >
-            {s.icon}
-            {s.label}
-          </button>
-        ))}
+      {/* Section nav — segmented tabs (kao /ui SettingsDialog) */}
+      <SegmentedTabs
+        className="mb-5"
+        activeId={section}
+        onChange={(id) => setSection(id as SettingsSection)}
+        items={navItems}
+      />
+
+      <div className="animate-in fade-in duration-200">
+        {section === "account" ? <SettingsAccountSection user={user} /> : <SettingsInfoSection />}
       </div>
-      {active === "account" && <SettingsAccountSection user={user} />}
-      {active === "info" && <SettingsInfoSection />}
     </SidePanel>
   );
 }

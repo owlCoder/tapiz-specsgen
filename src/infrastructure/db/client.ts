@@ -1,5 +1,6 @@
 import { drizzle, type MySql2Database } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
+import { buildMysqlPoolOptions } from "@tapizlabs/app-kit/db";
 import * as schema from "./schema";
 
 type Db = MySql2Database<typeof schema>;
@@ -7,18 +8,9 @@ type Db = MySql2Database<typeof schema>;
 const globalForDb = globalThis as unknown as { tapizAppDb?: Db };
 
 function createDb(): Db {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL nije podešen");
-  // Produkcija (Aiven): DATABASE_SSL_CA_BASE64 nosi CA sertifikat —
-  // uključuje TLS sa striktnom verifikacijom servera.
-  const caBase64 = process.env.DATABASE_SSL_CA_BASE64;
-  const pool = mysql.createPool({
-    uri: url,
-    connectionLimit: 5,
-    ...(caBase64
-      ? { ssl: { ca: Buffer.from(caBase64, "base64").toString("utf8"), rejectUnauthorized: true } }
-      : {}),
-  });
+  // Serverless-safe pool opcije (Vercel + Aiven) su standardizovane u @tapizlabs/app-kit/db:
+  // connectionLimit=1 po lambdi + striktan TLS kada je DATABASE_SSL_CA_BASE64 postavljen.
+  const pool = mysql.createPool(buildMysqlPoolOptions(process.env));
   return drizzle(pool, { schema, mode: "default" });
 }
 

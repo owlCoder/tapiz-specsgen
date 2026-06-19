@@ -6,9 +6,9 @@ import appConfig from "@/app.config";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex">
+    <div className="auth-page min-h-screen flex">
       <AuthLeftPanel />
-      <main className="flex-1 relative flex flex-col items-center justify-center px-6 py-12 bg-ink-100">
+      <main className="relative flex flex-1 flex-col items-center justify-center px-6 py-12">
         <div className="absolute top-4 right-4 flex items-center gap-2">
           <LanguageSwitcher />
           <ThemeToggle />

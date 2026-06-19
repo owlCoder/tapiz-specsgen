@@ -80,6 +80,7 @@ export const hu: Dict = {
         { value: "i18n", label: "5 nyelv" },
       ],
       chips: ["AUTH", "DB", "I18N", "DESIGN SYSTEM", "DEPLOY"],
+      status: "MŰKÖDŐ",
     },
   },
   landing: {

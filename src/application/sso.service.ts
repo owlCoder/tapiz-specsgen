@@ -1,25 +1,18 @@
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
+import type { LmsProfile } from "@tapizlabs/identity";
 import type { Role, UserDto } from "@/domain/types";
 import { usersRepo } from "@/infrastructure/repositories/users.repo";
 
-/** Profil koji vraća LMS /oauth/userinfo. */
-export interface LmsProfile {
-  sub: string;
-  email: string;
-  given_name: string;
-  family_name: string;
-  role: string;
-  university_id?: number;
-  faculty_id?: number;
-  university_short_name?: string;
-  faculty_short_name?: string;
-}
+// `LmsProfile` (claims iz LMS /oauth/userinfo) je standardizovan u @tapizlabs/identity
+// — zajednički za LMS i sve spoke proizvode. Re-export da auth.ts ima jedan izvor tipa.
+export type { LmsProfile };
 
 export type LmsLinkResult = { ok: true; user: UserDto } | { ok: false; error: "email-conflict" };
 
 /**
- * LMS role → app role. Prilagodi mapiranje po potrebi proizvoda.
+ * LMS role → app role. Template mapira student→user, assistant→admin; override-uje
+ * identity.mapLmsRole (koji vraća student|assistant) jer template ima role admin|user.
  * Vrati null za role koje ne smeju imati pristup.
  */
 export function mapLmsRole(role: string): Role | null {

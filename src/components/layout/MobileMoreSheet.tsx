@@ -1,11 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { Gear, LogOut, Moon, Sun, X } from "@tapizlabs/ui";
 import type { ReactNode } from "react";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useI18n } from "@/i18n/I18nProvider";
-import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, LOCALE_COOKIE, type Locale } from "@/i18n/config";
+import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "@/i18n/config";
+import { setLocaleAction } from "@/i18n/actions";
 
 export interface AppNavItem {
   label: string;
@@ -30,10 +31,6 @@ interface MobileMoreSheetProps {
   onClose: () => void;
   onSettings: () => void;
   onLogout: () => void;
-}
-
-function setLocaleCookie(value: Locale) {
-  document.cookie = `${LOCALE_COOKIE}=${value}; path=/; max-age=31536000; samesite=lax`;
 }
 
 function ActionButton({
@@ -77,9 +74,9 @@ export function MobileMoreSheet({
   onSettings,
   onLogout,
 }: MobileMoreSheetProps) {
-  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const { locale, dict } = useI18n();
+  const [, startTransition] = useTransition();
 
   if (!open) return null;
 
@@ -87,8 +84,7 @@ export function MobileMoreSheet({
     `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase() || "TB";
 
   const selectLocale = (value: Locale) => {
-    setLocaleCookie(value);
-    router.refresh();
+    startTransition(() => setLocaleAction(value));
   };
 
   return (

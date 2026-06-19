@@ -1,0 +1,95 @@
+/* ==========================================================================
+   Auth stranice — vizuelni sloj usklađen sa Tapiz LMS auth dizajnom (/ui).
+   Skopirano iz tapiz-reactjs-ui `login-form.css`; scope-ovano kroz `.auth-page`
+   da ne curi u app shell. Klase zamenjuju ranije inline arbitrary-value Tailwind.
+   ========================================================================== */
+
+.auth-page {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  isolation: isolate;
+  color: var(--color-txt-1);
+  background:
+    radial-gradient(38rem 28rem at 8% -6%, color-mix(in srgb, var(--color-primary-300) 13%, transparent), transparent),
+    radial-gradient(32rem 26rem at 100% 4%, color-mix(in srgb, var(--color-signal-400) 9%, transparent), transparent),
+    var(--color-ink-000);
+}
+
+html:not(.dark) .auth-page {
+  background:
+    radial-gradient(38rem 28rem at 8% -6%, color-mix(in srgb, var(--color-primary-300) 13%, transparent), transparent),
+    radial-gradient(32rem 26rem at 100% 4%, color-mix(in srgb, var(--color-signal-400) 10%, transparent), transparent),
+    linear-gradient(180deg, #f7fafc, #eef3f7 60%, #f7fafc);
+}
+
+/* bočni / brend panel */
+.auth-aside {
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--color-border);
+  background:
+    radial-gradient(36rem 30rem at 22% 0%, color-mix(in srgb, var(--color-primary-300) 14%, transparent), transparent 60%),
+    linear-gradient(160deg, color-mix(in srgb, var(--color-ink-200) 94%, transparent), var(--color-ink-100));
+}
+
+.auth-aside::before,
+.auth-aside::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 999px;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+.auth-aside::before {
+  width: 26rem;
+  height: 26rem;
+  top: -8rem;
+  left: -6rem;
+  opacity: .5;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-primary-300) 40%, transparent), transparent 65%);
+}
+
+.auth-aside::after {
+  width: 22rem;
+  height: 22rem;
+  bottom: -8rem;
+  right: -7rem;
+  opacity: .4;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-signal-400) 30%, transparent), transparent 65%);
+}
+
+/* gradijentni akcenat tekst */
+.auth-accent {
+  background: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-300));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* zaobljena kartica (stat blok) */
+.auth-card {
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-ink-200) 72%, transparent);
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+/* mono pill chip */
+.auth-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .72rem;
+  border: 1px solid var(--color-border-hi);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary-300) 8%, transparent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-txt-3);
+}

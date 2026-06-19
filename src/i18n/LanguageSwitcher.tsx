@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Globe } from "@tapizlabs/ui";
-import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, LOCALE_COOKIE, type Locale } from "./config";
+import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "./config";
+import { setLocaleAction } from "./actions";
 import { useI18n } from "./I18nProvider";
 
 /* Dropdown u stilu LanguageSwitcher-a iz tapiz-reactjs-ui:
@@ -26,10 +26,6 @@ function ChevronIcon({ open }: { open: boolean }) {
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
-}
-
-function setLocaleCookie(value: Locale) {
-  document.cookie = `${LOCALE_COOKIE}=${value}; path=/; max-age=31536000; samesite=lax`;
 }
 
 const dropdownStyle: React.CSSProperties = {
@@ -92,9 +88,9 @@ export function LanguageSwitcher({
   hideShortCode = false,
   collapsed = false,
 }: LanguageSwitcherProps) {
-  const router = useRouter();
   const { locale, dict } = useI18n();
   const [open, setOpen] = useState(false);
+  const [, startTransition] = useTransition();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -106,9 +102,8 @@ export function LanguageSwitcher({
   }, []);
 
   const select = (value: Locale) => {
-    setLocaleCookie(value);
     setOpen(false);
-    router.refresh();
+    startTransition(() => setLocaleAction(value));
   };
 
   if (collapsed) {

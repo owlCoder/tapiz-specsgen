@@ -8,6 +8,8 @@ Starter template za Tapiz satelitske proizvode. Baziran na `tapiz-boards` infras
 - MySQL + Drizzle ORM (`mysql2`, Node runtime — NIKAD `runtime = "edge"` na kodu koji dira bazu)
 - Auth.js v5: credentials (email+lozinka) + Tapiz LMS SSO (opciono, uključuje se kad su postavljene `LMS_*` env promenljive)
 - `@tapizlabs/ui` design system, Zod (sva eksterna validacija)
+- **`@tapizlabs/app-kit`** — `ActionResult`/`ok`/`fail`/`isOk` (re-export iz `src/lib/action-result.ts`) i `buildMysqlPoolOptions` (`/db`, koristi `db/client.ts`). NE duplirati lokalno.
+- **`@tapizlabs/identity`** — `LmsProfile` tip, `isLmsManaged` (guard nad LMS-projektovanim profilom), `hasEntitlement`; `@tapizlabs/identity/sso` daje `isLmsSsoEnabled` + `tapizLmsProvider` (provider wiring; override-uje se samo `profile()` za role mapiranje).
 - i18n: 5 lokaliteta (sr, sr-Cyrl, en, fr, hu), `Dict = typeof sr` je garantija kompletnosti
 
 ## Arhitektura (clean architecture — poštovati smer zavisnosti)
@@ -16,7 +18,7 @@ Starter template za Tapiz satelitske proizvode. Baziran na `tapiz-boards` infras
 src/domain/          # tipovi, zod šeme — bez zavisnosti ka ostalim slojevima
 src/application/     # use-case servisi + repo interfejsi u ports/ (DIP); baca DomainError
 src/infrastructure/  # db/schema.ts + db/client.ts (lenji singleton) + repositories/
-src/lib/             # auth.ts / auth.config.ts (split!), guards.ts, actions/, action-result.ts
+src/lib/             # auth.ts / auth.config.ts (split!), guards.ts, actions/, action-result.ts (re-export iz @tapizlabs/app-kit)
 src/features/        # UI po funkcionalnosti (auth, settings, items — zameni items sopstvenim)
 src/components/      # theme/, layout/ (deljeno)
 src/app/             # rute: (auth)/ login+register, (app)/ zaštićene, (public)/ status+changelog
@@ -45,6 +47,7 @@ src/app.config.ts    # jedina tačka parametrizacije — ime, boje, lmsClientId,
 
 ## Kritične začkoljice
 
+- **`"type": "module"` u package.json je OBAVEZAN** — `@tapizlabs/app-kit` i `@tapizlabs/identity` su ESM-only (samo `import` uslov u `exports`). Bez `type: module`, `tsx` skripta `smoke` učitava `.ts` kao CJS i puca sa `ERR_PACKAGE_PATH_NOT_EXPORTED` na `@tapizlabs/app-kit/db`. (Next/Turbopack radi i bez toga.)
 - **`@source "../../node_modules/@tapizlabs/ui/dist/index.js"` u globals.css je OBAVEZAN** — komponente design systema nose Tailwind klase u dist bundle-u; bez ovoga su "gole".
 - `@tapizlabs/ui` bundle NEMA `"use client"` — stateful komponente (modali, Switch, Tabs, useToast...) koristiti samo unutar client komponenti.
 - Auth.js split config: `src/lib/auth.config.ts` je edge-safe (koristi ga proxy) — NE importovati bcrypt/mysql2/repoe u njega.

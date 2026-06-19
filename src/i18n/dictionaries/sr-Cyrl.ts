@@ -80,6 +80,7 @@ export const srCyrl: Dict = {
         { value: "i18n", label: "5 језика" },
       ],
       chips: ["AUTH", "DB", "I18N", "DESIGN SYSTEM", "DEPLOY"],
+      status: "ОПЕРАТИВАН",
     },
   },
   landing: {

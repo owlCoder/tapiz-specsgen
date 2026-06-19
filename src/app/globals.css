@@ -3,6 +3,9 @@
 @import "tw-animate-css";
 @import "@tapizlabs/ui/theme.css";
 @import "@tapizlabs/ui/tailwind-theme.css";
+/* Landing (lp-* klase) + auth stranice (auth-* klase) — vizuelni sloj. */
+@import "../features/landing/landing.css";
+@import "./auth.css";
 
 /* Komponente design systema nose Tailwind klase u dist bundle-u —
    bez ovoga Tailwind ne generiše njihove utility klase (node_modules se ne skenira). */

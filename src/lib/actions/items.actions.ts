@@ -18,7 +18,7 @@ export async function createItemAction(
       title: formData.get("title"),
       description: formData.get("description") || undefined,
     });
-    if (!parsed.success) return { ok: false, error: parsed.error.errors[0]?.message ?? "Neispravan unos" };
+    if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Neispravan unos" };
 
     const item = await itemsService.create(user.id, parsed.data.title, parsed.data.description);
     revalidatePath("/items");
@@ -36,7 +36,7 @@ export async function updateItemAction(
       title: formData.get("title"),
       description: formData.get("description") || undefined,
     });
-    if (!parsed.success) return { ok: false, error: parsed.error.errors[0]?.message ?? "Neispravan unos" };
+    if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Neispravan unos" };
 
     await itemsService.update(user.id, itemId, {
       title: parsed.data.title,

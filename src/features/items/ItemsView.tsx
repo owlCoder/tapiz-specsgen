@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Plus, Trash2 } from "lucide-react";
-import { Button, ConfirmDialog, FormError } from "@tapizlabs/ui";
+import { Button, ConfirmDialog, FormError, Plus, Trash } from "@tapizlabs/ui";
 import { FormCard } from "@/components/layout/FormCard";
 import { useI18n } from "@/i18n/I18nProvider";
 import {
@@ -132,10 +131,10 @@ export function ItemsView({ items }: ItemsViewProps) {
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(item)}
-                      className="cursor-pointer border-none bg-transparent text-txt-3 hover:text-error"
+                      className="cursor-pointer border-none bg-transparent text-txt-3 hover:text-warn"
                       aria-label={d.deleteTitle}
                     >
-                      <Trash2 size={15} />
+                      <Trash size={15} />
                     </button>
                   </td>
                 </tr>

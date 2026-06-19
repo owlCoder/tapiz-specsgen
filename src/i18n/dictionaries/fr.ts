@@ -80,6 +80,7 @@ export const fr: Dict = {
         { value: "i18n", label: "5 langues" },
       ],
       chips: ["AUTH", "DB", "I18N", "DESIGN SYSTEM", "DEPLOY"],
+      status: "OPÉRATIONNEL",
     },
   },
   landing: {

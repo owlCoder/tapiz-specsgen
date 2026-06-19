@@ -2,36 +2,24 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import type { OAuthConfig } from "next-auth/providers";
 import bcrypt from "bcryptjs";
+import { isLmsSsoEnabled, tapizLmsProvider } from "@tapizlabs/identity/sso";
+import type { LmsProfile } from "@tapizlabs/identity";
 import { authConfig } from "./auth.config";
 import { loginSchema } from "@/domain/validation/user.schema";
 import { usersRepo } from "@/infrastructure/repositories/users.repo";
 import { fullName } from "@/domain/types";
-import { mapLmsRole, ssoService, type LmsProfile } from "@/application/sso.service";
+import { mapLmsRole, ssoService } from "@/application/sso.service";
 
 // SSO preko Tapiz LMS-a (OAuth 2.0 code flow + PKCE).
 // App posle prijave izdaje SOPSTVENU JWT sesiju; LMS token se ne čuva.
 // Provider se registruje samo kad su sve LMS_* env varijable postavljene.
-export const lmsSsoEnabled = Boolean(
-  process.env.LMS_UI_URL &&
-    process.env.LMS_API_URL &&
-    process.env.LMS_OAUTH_CLIENT_ID &&
-    process.env.LMS_OAUTH_CLIENT_SECRET,
-);
+export const lmsSsoEnabled = isLmsSsoEnabled(process.env);
 
-const tapizLmsProvider: OAuthConfig<LmsProfile> = {
-  id: "tapiz-lms",
-  name: "Tapiz LMS",
-  type: "oauth",
-  authorization: {
-    url: `${process.env.LMS_UI_URL}/oauth/authorize`,
-    params: { scope: "profile" },
-  },
-  token: `${process.env.LMS_API_URL}/oauth/token`,
-  userinfo: `${process.env.LMS_API_URL}/oauth/userinfo`,
-  checks: ["pkce", "state"],
-  clientId: process.env.LMS_OAUTH_CLIENT_ID,
-  clientSecret: process.env.LMS_OAUTH_CLIENT_SECRET,
-  profile(p) {
+// Wiring providera (URL-ovi, PKCE, client) je standardizovan u @tapizlabs/identity/sso.
+// `profile()` override-ujemo jer template mapira LMS rolu u svoje role (admin|user).
+const lmsProvider = {
+  ...tapizLmsProvider(process.env),
+  profile(p: LmsProfile) {
     return {
       id: p.sub,
       email: p.email,
@@ -39,7 +27,7 @@ const tapizLmsProvider: OAuthConfig<LmsProfile> = {
       role: mapLmsRole(p.role) ?? "user",
     };
   },
-};
+} as OAuthConfig<LmsProfile>;
 
 export const { handlers, auth, signIn, signOut, unstable_update: updateSession } = NextAuth({
   ...authConfig,
@@ -61,7 +49,7 @@ export const { handlers, auth, signIn, signOut, unstable_update: updateSession }
         };
       },
     }),
-    ...(lmsSsoEnabled ? [tapizLmsProvider] : []),
+    ...(lmsSsoEnabled ? [lmsProvider] : []),
   ],
   callbacks: {
     ...authConfig.callbacks,

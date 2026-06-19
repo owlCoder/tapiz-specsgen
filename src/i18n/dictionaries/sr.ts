@@ -85,6 +85,7 @@ export const sr = {
         { value: "i18n", label: "5 jezika" },
       ],
       chips: ["AUTH", "DB", "I18N", "DESIGN SYSTEM", "DEPLOY"],
+      status: "OPERATIVAN",
     },
   },
   landing: {

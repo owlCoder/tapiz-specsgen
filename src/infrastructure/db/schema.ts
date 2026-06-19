@@ -1,5 +1,4 @@
 import {
-  boolean,
   index,
   int,
   mysqlEnum,
