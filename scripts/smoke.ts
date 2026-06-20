@@ -7,11 +7,11 @@ async function main() {
   const settings = await settingsService.getOrCreate();
   console.log("settings:", settings.faculty, settings.academicYear);
 
-  // 2. Seed if empty
-  await coursesService.seedIfEmpty();
+  // 2. Load template courses
+  const seeded = await coursesService.loadTemplates();
+  if (seeded.length === 0) throw new Error("templates FAIL: no courses");
   const courses = await coursesService.getAll();
-  if (courses.length === 0) throw new Error("seed FAIL: no courses");
-  console.log("courses:", courses.length, "—", courses[0].name);
+  console.log("courses:", courses.length, "—", courses[0]?.name);
 
   // 3. Create course
   const stamp = Date.now();

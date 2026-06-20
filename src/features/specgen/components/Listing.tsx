@@ -6,13 +6,12 @@ import {
   Button,
   ConfirmDialog,
   Copy,
-  Download,
   Edit,
   EmptyState,
   FileText,
+  Layers,
   PageHeader,
   Plus,
-  RotateCcw,
   Surface,
   Trash,
   Users,
@@ -28,7 +27,8 @@ interface Props {
   onDup: (c: Course) => void;
   onDelete: (id: string) => void;
   onGenerate: (id: string) => void;
-  onReset: () => void;
+  onLoadTemplates: () => void;
+  templatesLoading?: boolean;
   /** Kad je ugnežden u dashboard, naslov dolazi spolja. */
   hideHeader?: boolean;
 }
@@ -40,13 +40,13 @@ export function Listing({
   onDup,
   onDelete,
   onGenerate,
-  onReset,
+  onLoadTemplates,
+  templatesLoading = false,
   hideHeader = false,
 }: Props) {
   const { dict } = useI18n();
   const t = dict.specgen.listing;
   const [deleting, setDeleting] = useState<Course | null>(null);
-  const [resetting, setResetting] = useState(false);
 
   return (
     <div className="space-y-5">
@@ -64,26 +64,34 @@ export function Listing({
       )}
 
       {courses.length === 0 ? (
-        <Surface variant="raised" padding="md">
-          <EmptyState
-            title={t.emptyTitle}
-            message={t.emptyMessage}
-          />
+        <Surface variant="raised" padding="lg">
+          <EmptyState title={t.emptyTitle} message={t.emptyMessage} />
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
+            <Button icon={<Plus size={15} />} onClick={onNew}>
+              {t.newCourse}
+            </Button>
+            <Button
+              variant="secondary"
+              icon={<Layers size={15} />}
+              loading={templatesLoading}
+              onClick={onLoadTemplates}
+            >
+              {t.startFromTemplate}
+            </Button>
+          </div>
         </Surface>
       ) : (
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-px border border-border bg-border">
           {courses.map((c) => (
-            <Surface key={c.id} variant="raised" padding="sm">
+            <div key={c.id} className="bg-ink-200 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-sm font-semibold text-(--tapiz-text-primary)">
+                    <span className="font-display text-sm font-semibold text-txt-1">
                       {c.name}
                     </span>
                     {c.abbr && (
-                      <span className="font-mono text-xs text-(--tapiz-text-muted)">
-                        ({c.abbr})
-                      </span>
+                      <span className="font-mono text-xs text-txt-3">({c.abbr})</span>
                     )}
                     {c.usesAgileBoard && (
                       <Badge variant="success">Agile: {c.agileTool || "da"}</Badge>
@@ -95,10 +103,13 @@ export function Listing({
                       </Badge>
                     )}
                   </div>
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[11px] text-(--tapiz-text-muted)">
+                  <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[11px] uppercase tracking-[.04em] text-txt-3">
                     <span>{fmt(t.year, { n: c.yearOfStudy })}</span>
+                    <span className="text-txt-4">·</span>
                     <span>{c.techStack.jezik || "—"}</span>
+                    {!c.usesAgileBoard && <span className="text-txt-4">·</span>}
                     {!c.usesAgileBoard && <span>{t.noAgile}</span>}
+                    <span className="text-txt-4">·</span>
                     <span>{fmt(t.modScen, { mod: c.modules.length, scen: c.scenarios.length })}</span>
                   </div>
                 </div>
@@ -130,21 +141,10 @@ export function Listing({
                   />
                 </div>
               </div>
-            </Surface>
+            </div>
           ))}
         </div>
       )}
-
-      <div className="pt-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={<RotateCcw size={13} />}
-          onClick={() => setResetting(true)}
-        >
-          {t.reset}
-        </Button>
-      </div>
 
       <ConfirmDialog
         open={deleting !== null}
@@ -159,21 +159,6 @@ export function Listing({
           setDeleting(null);
         }}
         onCancel={() => setDeleting(null)}
-      />
-
-      <ConfirmDialog
-        open={resetting}
-        title={t.resetTitle}
-        description={t.resetDesc}
-        confirmLabel={t.reset}
-        cancelLabel={dict.common.cancel}
-        icon={<RotateCcw size={18} />}
-        danger
-        onConfirm={() => {
-          setResetting(false);
-          onReset();
-        }}
-        onCancel={() => setResetting(false)}
       />
     </div>
   );

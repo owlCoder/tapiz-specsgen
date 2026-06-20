@@ -7,11 +7,10 @@ export const coursesService = {
     return coursesRepo.findAll();
   },
 
-  async seedIfEmpty(): Promise<void> {
-    const n = await coursesRepo.count();
-    if (n === 0) {
-      await coursesRepo.insertMany(SEED_COURSES);
-    }
+  /** Ubacuje polazne template predmete i vraća kompletnu, ažuriranu listu. */
+  async loadTemplates(): Promise<Course[]> {
+    await coursesRepo.insertMany(SEED_COURSES);
+    return coursesRepo.findAll();
   },
 
   async create(data: CourseInput): Promise<Course> {

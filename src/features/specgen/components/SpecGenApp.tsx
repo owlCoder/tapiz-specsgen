@@ -16,7 +16,6 @@ import {
 } from "@tapizlabs/ui";
 import type { AppSettings, ArchiveEntry, Course, CourseInput } from "../types/spec.types";
 import { uid } from "../lib/uid";
-import { SEED_COURSES } from "../lib/seed";
 import { Dashboard } from "./Dashboard";
 import { Generate } from "./Generate";
 import { Editor } from "./Editor";
@@ -25,6 +24,7 @@ import { SettingsView } from "./SettingsView";
 import {
   createCourseAction,
   deleteCourseAction,
+  loadTemplateCoursesAction,
   updateCourseAction,
 } from "@/lib/actions/courses.actions";
 import { logoutAction } from "@/lib/actions/auth.actions";
@@ -82,6 +82,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
   const [editing, setEditing] = useState<Course | null>(null);
   const [genId, setGenId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -146,14 +147,12 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
     setCourses((p) => p.filter((x) => x.id !== id));
   };
 
-  const resetAll = async () => {
-    for (const c of courses) await deleteCourseAction(c.id);
-    const created: Course[] = [];
-    for (const seed of SEED_COURSES) {
-      const result = await createCourseAction(seed);
-      if (result.ok) created.push(result.data);
-    }
-    setCourses(created);
+  const loadTemplates = async () => {
+    setTemplatesLoading(true);
+    const result = await loadTemplateCoursesAction();
+    setTemplatesLoading(false);
+    if (!result.ok) return;
+    setCourses(result.data);
   };
 
   const toggleSidebarCollapsed = () => {
@@ -219,12 +218,14 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
       courses={courses}
       archive={archive}
       settings={settings}
+      userName={user.name}
       onNew={startNew}
       onEdit={startEdit}
       onDup={dupCourse}
       onDelete={deleteCourse}
       onGenerate={(id) => { setGenId(id); setPanel("generate"); }}
-      onReset={resetAll}
+      onLoadTemplates={loadTemplates}
+      templatesLoading={templatesLoading}
       onOpenArchive={() => setPanel("archive")}
       onOpenSettings={openSettings}
     />

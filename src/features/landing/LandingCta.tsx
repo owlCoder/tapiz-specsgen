@@ -36,7 +36,7 @@ export function LandingCta() {
               ))}
             </div>
             <div className="lp-hero-actions lp-cta-actions">
-              <LandingButton href="/register">{t.createAccount}</LandingButton>
+              <LandingButton href="/login">{t.createAccount}</LandingButton>
               <LandingButton href="/login" variant="secondary">
                 {t.login}
               </LandingButton>

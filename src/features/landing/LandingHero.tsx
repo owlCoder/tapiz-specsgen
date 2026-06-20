@@ -10,9 +10,9 @@ export function LandingHero() {
   const t = dict.landing.hero;
 
   const metrics = [
-    { value: "Auth.js", label: t.metricAuth },
-    { value: "Drizzle", label: t.metricOutput },
-    { value: "i18n", label: t.metricTemplates },
+    { value: "FTN forma", label: t.metricAuth },
+    { value: "PDF + MD", label: t.metricOutput },
+    { value: "Po grupama", label: t.metricTemplates },
   ];
 
   return (
@@ -37,10 +37,7 @@ export function LandingHero() {
           </h1>
           <p>{t.description}</p>
           <div className="lp-hero-actions">
-            <LandingButton href="/register">{t.ctaRegister}</LandingButton>
-            <LandingButton href="/login" variant="secondary">
-              {t.ctaLogin}
-            </LandingButton>
+            <LandingButton href="/login">{t.ctaLogin}</LandingButton>
           </div>
           <div className="lp-hero-stats">
             {metrics.map((metric) => (

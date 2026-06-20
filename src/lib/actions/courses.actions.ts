@@ -44,3 +44,14 @@ export async function deleteCourseAction(id: string): Promise<ActionResult<void>
     return fail("Greška pri brisanju predmeta");
   }
 }
+
+/** Ubacuje polazne template predmete (ODP, OIB, ERS) i vraća kompletnu listu. */
+export async function loadTemplateCoursesAction(): Promise<ActionResult<Course[]>> {
+  try {
+    await requireAdmin();
+    const courses = await coursesService.loadTemplates();
+    return ok(courses);
+  } catch {
+    return fail("Greška pri učitavanju template predmeta");
+  }
+}

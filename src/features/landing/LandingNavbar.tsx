@@ -32,7 +32,7 @@ export function LandingNavbar() {
             {t.login}
             <ArrowRight size={15} />
           </Link>
-          <LandingButton href="/register" className="lp-nav-primary">
+          <LandingButton href="/login" className="lp-nav-primary">
             {t.register}
           </LandingButton>
         </Fragment>
@@ -45,7 +45,7 @@ export function LandingNavbar() {
           <LandingButton href="/login" variant="secondary">
             {t.login}
           </LandingButton>
-          <LandingButton href="/register">{t.register}</LandingButton>
+          <LandingButton href="/login">{t.register}</LandingButton>
         </Fragment>
       )}
       mobileDialogLabel={t.menu}

@@ -54,7 +54,7 @@ export function LandingFooter() {
           <FooterLink href="/login" icon={<LockIcon size={14} />}>
             {t.login}
           </FooterLink>
-          <FooterLink href="/register" icon={<UserCheck size={14} />}>
+          <FooterLink href="/login" icon={<UserCheck size={14} />}>
             {t.register}
           </FooterLink>
         </nav>

@@ -186,3 +186,8 @@ a.btn-primary:hover {
   background-size: 800px 100% !important;
   border-color: var(--color-border) !important;
 }
+
+/* Dashboard hero — pulsirajuća signal tačka (tapiz-reactjs-ui obrazac). */
+.tz-pulse {
+  animation: tz-pulse 2s ease-in-out infinite;
+}
