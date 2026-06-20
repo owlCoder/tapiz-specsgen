@@ -17,7 +17,7 @@ import {
 import type { AppSettings, ArchiveEntry, Course, CourseInput } from "../types/spec.types";
 import { uid } from "../lib/uid";
 import { SEED_COURSES } from "../lib/seed";
-import { Listing } from "./Listing";
+import { Dashboard } from "./Dashboard";
 import { Generate } from "./Generate";
 import { Editor } from "./Editor";
 import { ArchiveView } from "./ArchiveView";
@@ -31,6 +31,7 @@ import { logoutAction } from "@/lib/actions/auth.actions";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileMoreSheet } from "@/components/layout/MobileMoreSheet";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { useI18n } from "@/i18n/I18nProvider";
 import pkg from "../../../../package.json";
 
 const APP_VERSION = (pkg as { version?: string }).version ?? "0.1.0";
@@ -72,6 +73,8 @@ interface Props {
 }
 
 export function SpecGenApp({ initialSettings, initialCourses, initialArchive, user }: Props) {
+  const { dict } = useI18n();
+  const t = dict.specgen;
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [archive, setArchive] = useState<ArchiveEntry[]>(initialArchive);
@@ -172,13 +175,13 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
     {
       items: [
         {
-          label: "Generator",
+          label: t.nav.generator,
           icon: <Home size={16} />,
           active: panel === null,
           onClick: closePanel,
         },
         {
-          label: "Arhiva",
+          label: t.nav.archive,
           icon: <History size={16} />,
           badge: archiveBadge,
           active: panel === "archive",
@@ -190,9 +193,9 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
 
   // Mobile bottom nav — primary 4 items
   const mobileNavItems = [
-    { label: "Generator", icon: <Home size={20} />, active: panel === null, onClick: closePanel },
+    { label: t.nav.generator, icon: <Home size={20} />, active: panel === null, onClick: closePanel },
     {
-      label: "Arhiva",
+      label: t.nav.archive,
       icon: <History size={20} />,
       active: panel === "archive",
       onClick: () => setPanel("archive"),
@@ -203,12 +206,28 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
   const editorFooter = (
     <div className="flex items-center gap-2">
       <Button icon={<Check size={15} />} loading={saving} onClick={() => void saveCourse()}>
-        Sačuvaj
+        {t.editor.save}
       </Button>
       <Button variant="secondary" icon={<X size={15} />} onClick={closePanel}>
-        Otkaži
+        {t.editor.cancel}
       </Button>
     </div>
+  );
+
+  const dashboardEl = (
+    <Dashboard
+      courses={courses}
+      archive={archive}
+      settings={settings}
+      onNew={startNew}
+      onEdit={startEdit}
+      onDup={dupCourse}
+      onDelete={deleteCourse}
+      onGenerate={(id) => { setGenId(id); setPanel("generate"); }}
+      onReset={resetAll}
+      onOpenArchive={() => setPanel("archive")}
+      onOpenSettings={openSettings}
+    />
   );
 
   return (
@@ -245,34 +264,14 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
           />
           <main className="min-w-0 flex-1">
             <div className="w-full px-6 py-6">
-              <div className="pb-8">
-                <Listing
-                  courses={courses}
-                  onNew={startNew}
-                  onEdit={startEdit}
-                  onDup={dupCourse}
-                  onDelete={deleteCourse}
-                  onGenerate={(id) => { setGenId(id); setPanel("generate"); }}
-                  onReset={resetAll}
-                />
-              </div>
+              <div className="pb-8">{dashboardEl}</div>
             </div>
           </main>
         </div>
 
         {/* ── Mobile main content ───────────────────────── */}
         <main className="sm:hidden">
-          <div className="mx-auto w-full max-w-3xl px-4 py-4 pb-24">
-            <Listing
-              courses={courses}
-              onNew={startNew}
-              onEdit={startEdit}
-              onDup={dupCourse}
-              onDelete={deleteCourse}
-              onGenerate={(id) => { setGenId(id); setPanel("generate"); }}
-              onReset={resetAll}
-            />
-          </div>
+          <div className="mx-auto w-full max-w-3xl px-4 py-4 pb-24">{dashboardEl}</div>
         </main>
 
         {/* ── Mobile bottom nav ─────────────────────────── */}
@@ -311,7 +310,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
                   <circle cx="12" cy="19" r="1.8" />
                 </svg>
               </span>
-              <span className="max-w-full truncate">Više</span>
+              <span className="max-w-full truncate">{t.nav.more}</span>
             </button>
           </div>
         </nav>
@@ -321,7 +320,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
       <MobileMoreSheet
         open={moreSheetOpen}
         user={{ name: user.name, firstName, lastName }}
-        roleLabel="asistent"
+        roleLabel={t.roleAssistant}
         navGroups={[]}
         onClose={() => setMoreSheetOpen(false)}
         onSettings={() => { setMoreSheetOpen(false); openSettings(); }}
@@ -332,8 +331,8 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
       <SidePanel
         isOpen={panel === "edit" && editing !== null}
         onClose={closePanel}
-        title={editing?.name ? "Izmena predmeta" : "Novi predmet"}
-        subtitle={editing?.name || "Popuni podatke o predmetu"}
+        title={editing?.name ? t.editor.editTitle : t.editor.newTitle}
+        subtitle={editing?.name || t.editor.subtitle}
         icon={<FileText size={18} />}
         width="xl"
         footer={editorFooter}
@@ -344,8 +343,8 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
       <SidePanel
         isOpen={panel === "settings"}
         onClose={closePanel}
-        title="Postavke"
-        subtitle="Fakultet, školska godina i opcije."
+        title={t.settings.title}
+        subtitle={t.settings.subtitle}
         icon={<Gear size={18} />}
         width="md"
       >
@@ -355,8 +354,8 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
       <SidePanel
         isOpen={panel === "archive"}
         onClose={closePanel}
-        title="Arhiva generacija"
-        subtitle="Zamrznuti snimci specifikacija."
+        title={t.archive.title}
+        subtitle={t.archive.subtitle}
         icon={<History size={18} />}
         width="lg"
       >

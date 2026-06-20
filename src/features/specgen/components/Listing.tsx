@@ -18,6 +18,8 @@ import {
   Users,
 } from "@tapizlabs/ui";
 import type { Course } from "../types/spec.types";
+import { useI18n } from "@/i18n/I18nProvider";
+import { fmt } from "@/i18n/config";
 
 interface Props {
   courses: Course[];
@@ -27,30 +29,45 @@ interface Props {
   onDelete: (id: string) => void;
   onGenerate: (id: string) => void;
   onReset: () => void;
+  /** Kad je ugnežden u dashboard, naslov dolazi spolja. */
+  hideHeader?: boolean;
 }
 
-export function Listing({ courses, onNew, onEdit, onDup, onDelete, onGenerate, onReset }: Props) {
+export function Listing({
+  courses,
+  onNew,
+  onEdit,
+  onDup,
+  onDelete,
+  onGenerate,
+  onReset,
+  hideHeader = false,
+}: Props) {
+  const { dict } = useI18n();
+  const t = dict.specgen.listing;
   const [deleting, setDeleting] = useState<Course | null>(null);
   const [resetting, setResetting] = useState(false);
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        title="Predmeti"
-        subtitle="Lista predmeta za generisanje specifikacija projektnih zadataka."
-        variant="enterprise"
-        actions={
-          <Button icon={<Plus size={16} />} onClick={onNew}>
-            Novi predmet
-          </Button>
-        }
-      />
+      {!hideHeader && (
+        <PageHeader
+          title={t.title}
+          subtitle={t.subtitle}
+          variant="enterprise"
+          actions={
+            <Button icon={<Plus size={16} />} onClick={onNew}>
+              {t.newCourse}
+            </Button>
+          }
+        />
+      )}
 
       {courses.length === 0 ? (
         <Surface variant="raised" padding="md">
           <EmptyState
-            title="Nema predmeta"
-            message="Dodaj prvi predmet ili resetuj na početne primere."
+            title={t.emptyTitle}
+            message={t.emptyMessage}
           />
         </Surface>
       ) : (
@@ -74,17 +91,15 @@ export function Listing({ courses, onNew, onEdit, onDup, onDelete, onGenerate, o
                     {c.varyByTeam && (
                       <Badge variant="info">
                         <Users size={10} className="mr-1 inline" />
-                        po grupama
+                        {t.byGroups}
                       </Badge>
                     )}
                   </div>
                   <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[11px] text-(--tapiz-text-muted)">
-                    <span>{c.yearOfStudy}. god.</span>
+                    <span>{fmt(t.year, { n: c.yearOfStudy })}</span>
                     <span>{c.techStack.jezik || "—"}</span>
-                    {!c.usesAgileBoard && <span>bez Agile</span>}
-                    <span>
-                      {c.modules.length} mod · {c.scenarios.length} scen
-                    </span>
+                    {!c.usesAgileBoard && <span>{t.noAgile}</span>}
+                    <span>{fmt(t.modScen, { mod: c.modules.length, scen: c.scenarios.length })}</span>
                   </div>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-1.5">
@@ -93,7 +108,7 @@ export function Listing({ courses, onNew, onEdit, onDup, onDelete, onGenerate, o
                     icon={<FileText size={14} />}
                     onClick={() => onGenerate(c.id)}
                   >
-                    Generiši
+                    {t.generate}
                   </Button>
                   <Button
                     size="sm"
@@ -127,16 +142,16 @@ export function Listing({ courses, onNew, onEdit, onDup, onDelete, onGenerate, o
           icon={<RotateCcw size={13} />}
           onClick={() => setResetting(true)}
         >
-          Resetuj na početne primere
+          {t.reset}
         </Button>
       </div>
 
       <ConfirmDialog
         open={deleting !== null}
-        title="Obriši predmet"
-        description={`Trajno brisanje predmeta „${deleting?.name ?? ""}". Ova akcija se ne može poništiti.`}
-        confirmLabel="Obriši"
-        cancelLabel="Otkaži"
+        title={t.deleteTitle}
+        description={fmt(t.deleteDesc, { name: deleting?.name ?? "" })}
+        confirmLabel={dict.common.delete}
+        cancelLabel={dict.common.cancel}
         icon={<Trash size={18} />}
         danger
         onConfirm={() => {
@@ -148,10 +163,10 @@ export function Listing({ courses, onNew, onEdit, onDup, onDelete, onGenerate, o
 
       <ConfirmDialog
         open={resetting}
-        title="Resetuj na početne primere"
-        description="Svi predmeti će biti obrisani i zamenjeni početnim primerima (ODP, OIB, ERS). Ova akcija se ne može poništiti."
-        confirmLabel="Resetuj"
-        cancelLabel="Otkaži"
+        title={t.resetTitle}
+        description={t.resetDesc}
+        confirmLabel={t.reset}
+        cancelLabel={dict.common.cancel}
         icon={<RotateCcw size={18} />}
         danger
         onConfirm={() => {

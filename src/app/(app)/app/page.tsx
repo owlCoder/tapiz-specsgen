@@ -7,22 +7,19 @@ import { SpecGenApp } from "@/features/specgen";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function AppHomePage() {
+  let user;
   try {
-    await requireAdmin();
+    user = await requireAdmin();
   } catch {
     redirect("/login");
   }
-
-  await coursesService.seedIfEmpty();
 
   const [settings, courses, archive] = await Promise.all([
     settingsService.getOrCreate(),
     coursesService.getAll(),
     archiveService.getAll(),
   ]);
-
-  const user = await requireAdmin();
 
   return (
     <SpecGenApp

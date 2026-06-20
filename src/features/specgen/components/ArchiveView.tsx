@@ -8,12 +8,16 @@ import {
   ConfirmDialog,
   Download,
   EmptyState,
+  Pdf,
   Surface,
   Trash,
   X,
 } from "@tapizlabs/ui";
 import type { ArchiveEntry } from "../types/spec.types";
 import { deleteArchiveEntryAction } from "@/lib/actions/archive.actions";
+import { printMarkdownPdf } from "../lib/pdf";
+import { useI18n } from "@/i18n/I18nProvider";
+import { fmt, INTL_LOCALES } from "@/i18n/config";
 
 function downloadFile(text: string, name: string) {
   const b = new Blob([text], { type: "text/markdown" });
@@ -30,6 +34,7 @@ interface ViewMd {
   markdown: string;
   entryAbbr: string;
   entryYear: string;
+  faculty: string;
 }
 
 interface Props {
@@ -38,6 +43,8 @@ interface Props {
 }
 
 export function ArchiveView({ archive, onDeleted }: Props) {
+  const { dict, locale } = useI18n();
+  const t = dict.specgen.archive;
   const [open, setOpen] = useState<string | null>(null);
   const [viewMd, setViewMd] = useState<ViewMd | null>(null);
   const [deleting, setDeleting] = useState<ArchiveEntry | null>(null);
@@ -54,8 +61,8 @@ export function ArchiveView({ archive, onDeleted }: Props) {
       {archive.length === 0 ? (
         <Surface variant="raised" padding="md">
           <EmptyState
-            title="Arhiva je prazna"
-            message='U ekranu „Generiši" klikni Arhiviraj da sačuvaš snimak.'
+            title={t.emptyTitle}
+            message={t.emptyMessage}
           />
         </Surface>
       ) : (
@@ -79,8 +86,8 @@ export function ArchiveView({ archive, onDeleted }: Props) {
                     </span>
                   </div>
                   <div className="ml-5 mt-0.5 font-mono text-[11px] text-(--tapiz-text-muted)">
-                    {a.academicYear} · {a.variants.length} varijant(i) ·{" "}
-                    {new Date(a.createdAt).toLocaleDateString("sr-RS")}
+                    {a.academicYear} · {fmt(t.variants, { n: a.variants.length })} ·{" "}
+                    {new Date(a.createdAt).toLocaleDateString(INTL_LOCALES[locale])}
                   </div>
                 </button>
                 <div className="flex shrink-0 gap-1">
@@ -88,7 +95,7 @@ export function ArchiveView({ archive, onDeleted }: Props) {
                     size="sm"
                     variant="ghost"
                     icon={<Download size={14} />}
-                    title="Preuzmi sve"
+                    title={t.downloadAll}
                     onClick={() =>
                       downloadFile(
                         a.variants.map((v) => v.markdown).join("\n\n---\n\n"),
@@ -118,6 +125,7 @@ export function ArchiveView({ archive, onDeleted }: Props) {
                           markdown: v.markdown,
                           entryAbbr: a.abbr || a.courseName,
                           entryYear: a.academicYear,
+                          faculty: a.faculty,
                         })
                       }
                     >
@@ -134,10 +142,13 @@ export function ArchiveView({ archive, onDeleted }: Props) {
 
       <ConfirmDialog
         open={deleting !== null}
-        title="Obriši iz arhive"
-        description={`Trajno brisanje snimka „${deleting?.courseName ?? ""} ${deleting?.academicYear ?? ""}". Ova akcija se ne može poništiti.`}
-        confirmLabel="Obriši"
-        cancelLabel="Otkaži"
+        title={t.deleteTitle}
+        description={fmt(t.deleteDesc, {
+          name: deleting?.courseName ?? "",
+          year: deleting?.academicYear ?? "",
+        })}
+        confirmLabel={dict.common.delete}
+        cancelLabel={dict.common.cancel}
         icon={<Trash size={18} />}
         danger
         onConfirm={() => void confirmDelete()}
@@ -158,6 +169,19 @@ export function ArchiveView({ archive, onDeleted }: Props) {
                 {viewMd.code}
               </span>
               <div className="flex gap-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  icon={<Pdf size={14} />}
+                  onClick={() =>
+                    printMarkdownPdf({
+                      markdown: viewMd.markdown,
+                      title: `${viewMd.entryAbbr} — ${viewMd.code}`,
+                      faculty: viewMd.faculty,
+                      academicYear: viewMd.entryYear,
+                    })
+                  }
+                />
                 <Button
                   size="sm"
                   variant="ghost"

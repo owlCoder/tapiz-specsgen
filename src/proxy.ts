@@ -7,16 +7,21 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
   const user = req.auth?.user;
-  const isAuthPage = nextUrl.pathname === "/login" || nextUrl.pathname === "/register";
+  const path = nextUrl.pathname;
+  const isAuthPage = path === "/login" || path === "/register";
+  // Javne rute: landing (/), auth, status/changelog, health.
   const isPublic =
+    path === "/" ||
     isAuthPage ||
-    ["/status", "/changelog", "/api/health"].includes(nextUrl.pathname);
+    ["/status", "/changelog", "/api/health"].includes(path);
 
+  // Nezaštićene rute prolaze; za sve ostalo traži prijavu.
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }
-  if (user && isAuthPage) {
-    return NextResponse.redirect(new URL("/", nextUrl));
+  // Ulogovani na auth stranicama ili landingu → vode se u aplikaciju.
+  if (user && (isAuthPage || path === "/")) {
+    return NextResponse.redirect(new URL("/app", nextUrl));
   }
   return NextResponse.next();
 });

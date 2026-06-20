@@ -65,7 +65,10 @@ export const appEvents = mysqlTable(
 
 export const appSettings = mysqlTable("app_settings", {
   id: varchar("id", { length: 4 }).primaryKey().default("1"),
+  university: varchar("university", { length: 255 }).notNull().default(""),
   faculty: varchar("faculty", { length: 255 }).notNull().default(""),
+  department: varchar("department", { length: 255 }).notNull().default(""),
+  city: varchar("city", { length: 120 }).notNull().default(""),
   academicYear: varchar("academic_year", { length: 20 }).notNull().default(""),
   integrityNote: tinyint("integrity_note").notNull().default(1),
   updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),

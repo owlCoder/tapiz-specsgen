@@ -6,7 +6,10 @@ import type { AppSettings } from "@/features/specgen/types/spec.types";
 
 function mapRow(row: typeof appSettings.$inferSelect): AppSettings {
   return {
+    university: row.university,
     faculty: row.faculty,
+    department: row.department,
+    city: row.city,
     academicYear: row.academicYear,
     integrityNote: row.integrityNote === 1,
   };
@@ -18,7 +21,10 @@ export const settingsRepo: ISettingsRepo = {
     if (rows.length > 0) return mapRow(rows[0]);
     await db.insert(appSettings).values({
       id: "1",
+      university: defaults.university,
       faculty: defaults.faculty,
+      department: defaults.department,
+      city: defaults.city,
       academicYear: defaults.academicYear,
       integrityNote: defaults.integrityNote ? 1 : 0,
     });
@@ -29,7 +35,10 @@ export const settingsRepo: ISettingsRepo = {
     await db
       .update(appSettings)
       .set({
+        university: data.university,
         faculty: data.faculty,
+        department: data.department,
+        city: data.city,
         academicYear: data.academicYear,
         integrityNote: data.integrityNote ? 1 : 0,
       })

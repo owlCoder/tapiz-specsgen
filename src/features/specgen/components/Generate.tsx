@@ -8,12 +8,16 @@ import {
   Copy,
   Download,
   History,
+  Pdf,
   Surface,
 } from "@tapizlabs/ui";
 import type { AppSettings, ArchiveEntry, Course } from "../types/spec.types";
 import { buildVariant, generateMarkdown } from "../lib/variant";
+import { printSpecPdf } from "../lib/pdf";
 import { Preview } from "./Preview";
 import { createArchiveEntryAction } from "@/lib/actions/archive.actions";
+import { useI18n } from "@/i18n/I18nProvider";
+import { fmt } from "@/i18n/config";
 
 function downloadFile(text: string, name: string) {
   const b = new Blob([text], { type: "text/markdown" });
@@ -32,6 +36,8 @@ interface Props {
 }
 
 export function Generate({ course, settings, onArchived }: Props) {
+  const { dict } = useI18n();
+  const t = dict.specgen.generate;
   const [team, setTeam] = useState(0);
   const [copied, setCopied] = useState(false);
   const [archiving, setArchiving] = useState(false);
@@ -88,7 +94,15 @@ export function Generate({ course, settings, onArchived }: Props) {
             icon={copied ? <Check size={14} /> : <Copy size={14} />}
             onClick={() => void copy()}
           >
-            {copied ? "Kopirano" : "Kopiraj"}
+            {copied ? t.copied : t.copy}
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            icon={<Pdf size={14} />}
+            onClick={() => printSpecPdf(course, settings, variant)}
+          >
+            {t.downloadPdf}
           </Button>
           <Button
             size="sm"
@@ -96,7 +110,7 @@ export function Generate({ course, settings, onArchived }: Props) {
             icon={<Download size={14} />}
             onClick={() => downloadFile(md, `${variant.code}.md`)}
           >
-            .md
+            {t.downloadMd}
           </Button>
           {course.varyByTeam && (
             <Button
@@ -110,7 +124,7 @@ export function Generate({ course, settings, onArchived }: Props) {
                 )
               }
             >
-              Sve grupe
+              {t.allGroups}
             </Button>
           )}
           <Button
@@ -119,7 +133,7 @@ export function Generate({ course, settings, onArchived }: Props) {
             loading={archiving}
             onClick={() => void archiveNow()}
           >
-            {archived ? "Arhivirano" : "Arhiviraj"}
+            {archived ? t.archived : t.archive}
           </Button>
         </div>
       </Surface>
@@ -128,7 +142,7 @@ export function Generate({ course, settings, onArchived }: Props) {
         <Surface variant="raised" padding="sm">
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <span className="font-mono text-[11px] uppercase tracking-wider text-(--tapiz-text-muted)">
-              Grupa
+              {t.group}
             </span>
             <Badge variant="info">{variant.code}</Badge>
             {variant.scenario && (
@@ -143,7 +157,7 @@ export function Generate({ course, settings, onArchived }: Props) {
                 variant={team === i ? "primary" : "secondary"}
                 onClick={() => setTeam(i)}
               >
-                Grupa {i + 1}
+                {fmt(t.groupN, { n: i + 1 })}
               </Button>
             ))}
           </div>
@@ -155,7 +169,7 @@ export function Generate({ course, settings, onArchived }: Props) {
       <Surface variant="raised" padding="sm">
         <details>
           <summary className="cursor-pointer font-mono text-[11px] uppercase tracking-wider text-(--tapiz-text-muted)">
-            Markdown izvor
+            {t.markdownSource}
           </summary>
           <textarea
             id="mdout"

@@ -12,6 +12,7 @@ import {
 } from "@tapizlabs/ui";
 import type { AppSettings } from "../types/spec.types";
 import { updateSettingsAction } from "@/lib/actions/settings.actions";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface Props {
   settings: AppSettings;
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export function SettingsView({ settings: initialSettings, onSaved }: Props) {
+  const { dict } = useI18n();
+  const t = dict.specgen.settings;
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,17 +50,47 @@ export function SettingsView({ settings: initialSettings, onSaved }: Props) {
     <div className="space-y-5">
       <Surface variant="raised" padding="md" className="space-y-5">
         <div>
-          <FieldLabel htmlFor="faculty">Naziv fakulteta</FieldLabel>
+          <FieldLabel htmlFor="university">{t.university}</FieldLabel>
           <Input
-            id="faculty"
-            value={settings.faculty}
-            onChange={(e) => setSettings({ ...settings, faculty: e.target.value })}
-            placeholder="npr. FTN Novi Sad"
+            id="university"
+            value={settings.university}
+            onChange={(e) => setSettings({ ...settings, university: e.target.value })}
+            placeholder={t.universityPlaceholder}
           />
         </div>
 
         <div>
-          <FieldLabel htmlFor="acyear">Školska godina</FieldLabel>
+          <FieldLabel htmlFor="faculty">{t.faculty}</FieldLabel>
+          <Input
+            id="faculty"
+            value={settings.faculty}
+            onChange={(e) => setSettings({ ...settings, faculty: e.target.value })}
+            placeholder={t.facultyPlaceholder}
+          />
+        </div>
+
+        <div>
+          <FieldLabel htmlFor="department">{t.department}</FieldLabel>
+          <Input
+            id="department"
+            value={settings.department}
+            onChange={(e) => setSettings({ ...settings, department: e.target.value })}
+            placeholder={t.departmentPlaceholder}
+          />
+        </div>
+
+        <div>
+          <FieldLabel htmlFor="city">{t.city}</FieldLabel>
+          <Input
+            id="city"
+            value={settings.city}
+            onChange={(e) => setSettings({ ...settings, city: e.target.value })}
+            placeholder={t.cityPlaceholder}
+          />
+        </div>
+
+        <div>
+          <FieldLabel htmlFor="acyear">{t.academicYear}</FieldLabel>
           <div className="flex gap-2">
             <Input
               id="acyear"
@@ -65,7 +98,7 @@ export function SettingsView({ settings: initialSettings, onSaved }: Props) {
               onChange={(e) => setSettings({ ...settings, academicYear: e.target.value })}
               placeholder="2025/2026"
             />
-            <Button variant="secondary" onClick={bumpYear} title="Sledeća godina">
+            <Button variant="secondary" onClick={bumpYear} title={t.nextYear}>
               +1
             </Button>
           </div>
@@ -74,10 +107,10 @@ export function SettingsView({ settings: initialSettings, onSaved }: Props) {
         <div className="flex items-center justify-between gap-4 rounded border border-(--tapiz-border-subtle) p-3">
           <div>
             <div className="text-sm font-medium text-(--tapiz-text-primary)">
-              Napomena o akademskoj čestitosti
+              {t.integrityTitle}
             </div>
             <div className="text-xs text-(--tapiz-text-muted)">
-              Dodaje napomenu o zabrani prepisivanja u specifikaciju.
+              {t.integrityDesc}
             </div>
           </div>
           <Switch
@@ -93,7 +126,7 @@ export function SettingsView({ settings: initialSettings, onSaved }: Props) {
           loading={loading}
           onClick={() => void save()}
         >
-          {saved ? "Sačuvano" : "Sačuvaj postavke"}
+          {saved ? t.saved : t.save}
         </Button>
       </Surface>
     </div>

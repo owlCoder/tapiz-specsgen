@@ -69,7 +69,10 @@ export interface Course {
 }
 
 export interface AppSettings {
+  university: string;
   faculty: string;
+  department: string;
+  city: string;
   academicYear: string;
   integrityNote: boolean;
 }

@@ -15,6 +15,8 @@ import {
 } from "@tapizlabs/ui";
 import type { Course, Deliverable, GradingItem, Module, Scenario } from "../types/spec.types";
 import { uid } from "../lib/uid";
+import { useI18n } from "@/i18n/I18nProvider";
+import { fmt } from "@/i18n/config";
 
 function Section({
   title,
@@ -62,6 +64,8 @@ interface Props {
 }
 
 export function Editor({ editing, setEditing }: Props) {
+  const { dict } = useI18n();
+  const t = dict.specgen.editor;
   const up = (p: Partial<Course>) => setEditing({ ...editing, ...p });
   const upTS = (p: Partial<Course["techStack"]>) =>
     setEditing({ ...editing, techStack: { ...editing.techStack, ...p } });
@@ -114,18 +118,18 @@ export function Editor({ editing, setEditing }: Props) {
   return (
     <div className="space-y-3">
         {/* Osnovni podaci */}
-        <Section title="Osnovni podaci" open>
+        <Section title={t.basic} open>
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="sm:col-span-2">
-              <Field label="Naziv">
+              <Field label={t.name}>
                 <Input
                   value={editing.name}
                   onChange={(e) => up({ name: e.target.value })}
-                  placeholder="npr. Osnove distribuiranog programiranja"
+                  placeholder={t.namePlaceholder}
                 />
               </Field>
             </div>
-            <Field label="Skraćenica">
+            <Field label={t.abbr}>
               <Input
                 value={editing.abbr}
                 onChange={(e) => up({ abbr: e.target.value })}
@@ -134,30 +138,30 @@ export function Editor({ editing, setEditing }: Props) {
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Field label="Godina">
+            <Field label={t.year}>
               <Input
                 type="number"
                 value={String(editing.yearOfStudy)}
                 onChange={(e) => up({ yearOfStudy: +e.target.value })}
               />
             </Field>
-            <Field label="Semestar">
+            <Field label={t.semester}>
               <Input
                 type="number"
                 value={String(editing.semester)}
                 onChange={(e) => up({ semester: +e.target.value })}
               />
             </Field>
-            <Field label="Tip">
+            <Field label={t.type}>
               <Select
                 value={editing.projectType}
                 onChange={(e) => up({ projectType: e.target.value as "timski" | "individualni" })}
               >
-                <option value="timski">timski</option>
-                <option value="individualni">individualni</option>
+                <option value="timski">{t.typeTeam}</option>
+                <option value="individualni">{t.typeIndividual}</option>
               </Select>
             </Field>
-            <Field label="Vel. tima">
+            <Field label={t.teamSize}>
               <Input
                 type="number"
                 value={String(editing.teamSize)}
@@ -166,7 +170,7 @@ export function Editor({ editing, setEditing }: Props) {
               />
             </Field>
           </div>
-          <Field label="Opis (opciono — ako prazno koristi se scenario)">
+          <Field label={t.description}>
             <Textarea
               value={editing.description}
               onChange={(e) => up({ description: e.target.value })}
@@ -176,27 +180,27 @@ export function Editor({ editing, setEditing }: Props) {
         </Section>
 
         {/* Tehnološki stack */}
-        <Section title="Tehnološki stack">
+        <Section title={t.techStack}>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Jezik"><Input value={editing.techStack.jezik} onChange={(e) => upTS({ jezik: e.target.value })} /></Field>
-            <Field label="Backend"><Input value={editing.techStack.backend} onChange={(e) => upTS({ backend: e.target.value })} /></Field>
-            <Field label="Frontend"><Input value={editing.techStack.frontend} onChange={(e) => upTS({ frontend: e.target.value })} /></Field>
-            <Field label="Baza"><Input value={editing.techStack.baza} onChange={(e) => upTS({ baza: e.target.value })} /></Field>
+            <Field label={t.language}><Input value={editing.techStack.jezik} onChange={(e) => upTS({ jezik: e.target.value })} /></Field>
+            <Field label={t.backend}><Input value={editing.techStack.backend} onChange={(e) => upTS({ backend: e.target.value })} /></Field>
+            <Field label={t.frontend}><Input value={editing.techStack.frontend} onChange={(e) => upTS({ frontend: e.target.value })} /></Field>
+            <Field label={t.database}><Input value={editing.techStack.baza} onChange={(e) => upTS({ baza: e.target.value })} /></Field>
             <div className="sm:col-span-2">
-              <Field label="Ostalo"><Input value={editing.techStack.ostalo} onChange={(e) => upTS({ ostalo: e.target.value })} /></Field>
+              <Field label={t.other}><Input value={editing.techStack.ostalo} onChange={(e) => upTS({ ostalo: e.target.value })} /></Field>
             </div>
           </div>
           <div className="flex items-center justify-between rounded border border-(--tapiz-border-subtle) p-3">
-            <span className="text-sm font-medium text-(--tapiz-text-primary)">Koristi Agile board</span>
+            <span className="text-sm font-medium text-(--tapiz-text-primary)">{t.usesAgile}</span>
             <Switch
               checked={editing.usesAgileBoard}
               onChange={(v) => up({ usesAgileBoard: v })}
             />
           </div>
           {editing.usesAgileBoard && (
-            <Field label="Alat">
+            <Field label={t.agileTool}>
               <Input
-                placeholder="Jira / Trello / GitHub Projects"
+                placeholder={t.agileToolPlaceholder}
                 value={editing.agileTool}
                 onChange={(e) => up({ agileTool: e.target.value })}
               />
@@ -206,14 +210,14 @@ export function Editor({ editing, setEditing }: Props) {
 
         {/* Moduli */}
         <Section
-          title={`Moduli / zahtevi (${editing.modules.length})`}
-          hint="Obavezni uvek ulaze; iz izbornih se nasumično bira zadati broj."
+          title={fmt(t.modules, { n: editing.modules.length })}
+          hint={t.modulesHint}
         >
           {editing.modules.map((m, i) => (
             <div key={m.id} className="space-y-2 rounded border border-(--tapiz-border-subtle) p-3">
               <div className="flex gap-2">
                 <Input
-                  placeholder="naziv modula"
+                  placeholder={t.moduleName}
                   value={m.naziv}
                   onChange={(e) => modUp(i, { naziv: e.target.value })}
                 />
@@ -225,14 +229,14 @@ export function Editor({ editing, setEditing }: Props) {
                 />
               </div>
               <Textarea
-                placeholder="opis zahteva"
+                placeholder={t.moduleDesc}
                 value={m.opis}
                 onChange={(e) => modUp(i, { opis: e.target.value })}
                 rows={2}
               />
               <div className="flex items-center gap-3">
                 <Input
-                  placeholder="kategorija"
+                  placeholder={t.category}
                   value={m.kategorija}
                   onChange={(e) => modUp(i, { kategorija: e.target.value })}
                   className="max-w-40"
@@ -242,7 +246,7 @@ export function Editor({ editing, setEditing }: Props) {
                     checked={m.mandatory}
                     onChange={(v) => modUp(i, { mandatory: v })}
                   />
-                  <span className="text-xs text-(--tapiz-text-muted)">obavezan</span>
+                  <span className="text-xs text-(--tapiz-text-muted)">{t.mandatory}</span>
                 </div>
               </div>
             </div>
@@ -255,20 +259,20 @@ export function Editor({ editing, setEditing }: Props) {
               up({ modules: [...editing.modules, { id: uid(), naziv: "", opis: "", kategorija: "", mandatory: false }] })
             }
           >
-            Dodaj modul
+            {t.addModule}
           </Button>
         </Section>
 
         {/* Scenariji */}
         <Section
-          title={`Scenariji / domeni (${editing.scenarios.length})`}
-          hint={'Entiteti označeni „izborni" se nasumično uključuju. Isto važi za atribute.'}
+          title={fmt(t.scenarios, { n: editing.scenarios.length })}
+          hint={t.scenariosHint}
         >
           {editing.scenarios.map((s, i) => (
             <div key={s.id} className="space-y-2 rounded border border-(--tapiz-border-subtle) p-3">
               <div className="flex gap-2">
                 <Input
-                  placeholder="naziv scenarija"
+                  placeholder={t.scenarioName}
                   value={s.naziv}
                   onChange={(e) => scUp(i, { naziv: e.target.value })}
                 />
@@ -280,7 +284,7 @@ export function Editor({ editing, setEditing }: Props) {
                 />
               </div>
               <Textarea
-                placeholder="opis"
+                placeholder={t.scenarioDesc}
                 value={s.opis}
                 onChange={(e) => scUp(i, { opis: e.target.value })}
                 rows={2}
@@ -290,7 +294,7 @@ export function Editor({ editing, setEditing }: Props) {
                   <div key={j} className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Input
-                        placeholder="entitet"
+                        placeholder={t.entity}
                         value={e.naziv}
                         onChange={(ev) => entUp(i, j, { naziv: ev.target.value })}
                       />
@@ -299,7 +303,7 @@ export function Editor({ editing, setEditing }: Props) {
                           checked={e.optional}
                           onChange={(v) => entUp(i, j, { optional: v })}
                         />
-                        <span className="text-xs text-(--tapiz-text-muted)">izb.</span>
+                        <span className="text-xs text-(--tapiz-text-muted)">{t.optionalShort}</span>
                       </div>
                       <Button
                         size="sm"
@@ -311,12 +315,12 @@ export function Editor({ editing, setEditing }: Props) {
                     {e.atributi.map((a, k) => (
                       <div key={k} className="flex items-center gap-1.5 pl-3">
                         <Input
-                          placeholder="atribut"
+                          placeholder={t.attribute}
                           value={a.naziv}
                           onChange={(ev) => atrUp(i, j, k, { naziv: ev.target.value })}
                         />
                         <Input
-                          placeholder="tip"
+                          placeholder={t.typeLabel}
                           value={a.tip}
                           onChange={(ev) => atrUp(i, j, k, { tip: ev.target.value })}
                           className="max-w-24"
@@ -343,7 +347,7 @@ export function Editor({ editing, setEditing }: Props) {
                         entUp(i, j, { atributi: [...e.atributi, { naziv: "", tip: "", optional: false }] })
                       }
                     >
-                      atribut
+                      {t.addAttribute}
                     </Button>
                   </div>
                 ))}
@@ -355,7 +359,7 @@ export function Editor({ editing, setEditing }: Props) {
                     scUp(i, { entiteti: [...s.entiteti, { naziv: "", optional: false, atributi: [] }] })
                   }
                 >
-                  entitet
+                  {t.addEntity}
                 </Button>
               </div>
             </div>
@@ -368,13 +372,13 @@ export function Editor({ editing, setEditing }: Props) {
               up({ scenarios: [...editing.scenarios, { id: uid(), naziv: "", opis: "", entiteti: [] }] })
             }
           >
-            Dodaj scenario
+            {t.addScenario}
           </Button>
         </Section>
 
         {/* Varijacija */}
-        <Section title="Varijacija (sprečavanje prepisivanja)">
-          <Field label="Broj izbornih modula koji se nasumično biraju">
+        <Section title={t.variation}>
+          <Field label={t.optionalCount}>
             <Input
               type="number"
               value={String(editing.optionalCount)}
@@ -383,19 +387,19 @@ export function Editor({ editing, setEditing }: Props) {
             />
           </Field>
           <div className="grid max-w-xs grid-cols-2 gap-3">
-            <Field label="Izbornih entiteta: od">
+            <Field label={t.entityVarFrom}>
               <Input type="number" value={String(editing.entityVarMin)} onChange={(e) => up({ entityVarMin: +e.target.value })} />
             </Field>
-            <Field label="do">
+            <Field label={t.entityVarTo}>
               <Input type="number" value={String(editing.entityVarMax)} onChange={(e) => up({ entityVarMax: +e.target.value })} />
             </Field>
           </div>
           <div className="flex items-center justify-between rounded border border-(--tapiz-border-subtle) p-3">
-            <span className="text-sm font-medium text-(--tapiz-text-primary)">Različita varijanta po grupi</span>
+            <span className="text-sm font-medium text-(--tapiz-text-primary)">{t.varyByTeam}</span>
             <Switch checked={editing.varyByTeam} onChange={(v) => up({ varyByTeam: v })} />
           </div>
           {editing.varyByTeam && (
-            <Field label="Broj grupa">
+            <Field label={t.numTeams}>
               <Input
                 type="number"
                 value={String(editing.numTeams)}
@@ -407,9 +411,9 @@ export function Editor({ editing, setEditing }: Props) {
         </Section>
 
         {/* Nefunkcionalni, rokovi, ocenjivanje */}
-        <Section title="Nefunkcionalni zahtevi, rokovi, ocenjivanje">
+        <Section title={t.extras}>
           <div>
-            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">Nefunkcionalni zahtevi</p>
+            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">{t.nonFunctional}</p>
             <div className="space-y-2">
               {editing.nonFunctional.map((x, i) => (
                 <div key={i} className="flex gap-2">
@@ -419,44 +423,44 @@ export function Editor({ editing, setEditing }: Props) {
               ))}
             </div>
             <Button size="sm" variant="ghost" icon={<Plus size={14} />} onClick={() => listAdd("nonFunctional", "")} className="mt-2">
-              Dodaj
+              {t.add}
             </Button>
           </div>
 
           <div className="border-t border-(--tapiz-border-subtle) pt-3">
-            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">Predaja i rokovi</p>
+            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">{t.deliverables}</p>
             <div className="space-y-2">
               {editing.deliverables.map((d, i) => (
                 <div key={i} className="flex gap-2">
-                  <Input placeholder="stavka" value={d.naziv} onChange={(e) => listSet("deliverables", i, { ...d, naziv: e.target.value } as Deliverable)} />
-                  <Input placeholder="rok" value={d.rok} onChange={(e) => listSet("deliverables", i, { ...d, rok: e.target.value } as Deliverable)} />
+                  <Input placeholder={t.deliverableName} value={d.naziv} onChange={(e) => listSet("deliverables", i, { ...d, naziv: e.target.value } as Deliverable)} />
+                  <Input placeholder={t.deliverableDeadline} value={d.rok} onChange={(e) => listSet("deliverables", i, { ...d, rok: e.target.value } as Deliverable)} />
                   <Button size="sm" variant="ghost" icon={<Trash size={14} />} onClick={() => listDel("deliverables", i)} />
                 </div>
               ))}
             </div>
             <Button size="sm" variant="ghost" icon={<Plus size={14} />} onClick={() => listAdd("deliverables", { naziv: "", rok: "" } as Deliverable)} className="mt-2">
-              Dodaj rok
+              {t.addDeadline}
             </Button>
           </div>
 
           <div className="border-t border-(--tapiz-border-subtle) pt-3">
-            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">Ocenjivanje</p>
+            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">{t.grading}</p>
             <div className="space-y-2">
               {editing.grading.map((g, i) => (
                 <div key={i} className="flex gap-2">
-                  <Input placeholder="stavka" value={g.stavka} onChange={(e) => listSet("grading", i, { ...g, stavka: e.target.value } as GradingItem)} />
-                  <Input type="number" placeholder="poeni" value={String(g.poeni)} onChange={(e) => listSet("grading", i, { ...g, poeni: +e.target.value } as GradingItem)} className="max-w-24" />
+                  <Input placeholder={t.gradingItem} value={g.stavka} onChange={(e) => listSet("grading", i, { ...g, stavka: e.target.value } as GradingItem)} />
+                  <Input type="number" placeholder={t.gradingPoints} value={String(g.poeni)} onChange={(e) => listSet("grading", i, { ...g, poeni: +e.target.value } as GradingItem)} className="max-w-24" />
                   <Button size="sm" variant="ghost" icon={<Trash size={14} />} onClick={() => listDel("grading", i)} />
                 </div>
               ))}
             </div>
             <Button size="sm" variant="ghost" icon={<Plus size={14} />} onClick={() => listAdd("grading", { stavka: "", poeni: 0 } as GradingItem)} className="mt-2">
-              Dodaj stavku
+              {t.addGrading}
             </Button>
           </div>
 
           <div className="border-t border-(--tapiz-border-subtle) pt-3">
-            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">Napomene</p>
+            <p className="mb-2 text-xs font-medium text-(--tapiz-text-muted)">{t.notes}</p>
             <Textarea value={editing.notes} onChange={(e) => up({ notes: e.target.value })} rows={3} />
           </div>
         </Section>

@@ -2,7 +2,10 @@ import type { AppSettings, Course, Entitet, Module, Scenario } from "../types/sp
 import { uid } from "./uid";
 
 export const SEED_SETTINGS: AppSettings = {
-  faculty: "Fakultet tehničkih nauka, Novi Sad",
+  university: "Univerzitet u Novom Sadu",
+  faculty: "Fakultet tehničkih nauka",
+  department: "Računarstvo i automatika / Računarske nauke i informatika",
+  city: "Novi Sad",
   academicYear: "2025/2026",
   integrityNote: true,
 };

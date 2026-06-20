@@ -72,7 +72,7 @@ export function AppSidebar({
                   Tapiz Specs+
                 </div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-txt-3">
-                  Specifikacije
+                  {dict.specgen.productTagline}
                 </div>
               </div>
             )}
@@ -131,7 +131,7 @@ export function AppSidebar({
                       {userName}
                     </div>
                     <div className="mt-0.5 inline-flex items-center border border-primary-300/60 px-1.5 py-px font-mono text-[9px] uppercase tracking-[.14em] text-primary-300">
-                      asistent
+                      {dict.specgen.roleAssistant}
                     </div>
                   </div>
                 </div>
