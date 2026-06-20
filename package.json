@@ -16,6 +16,7 @@
   "dependencies": {
     "@tapizlabs/app-kit": "^0.1.1",
     "@tapizlabs/identity": "^0.1.1",
+    "@tapizlabs/telemetry": "^0.1.1",
     "@tapizlabs/ui": "^0.2.22",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
