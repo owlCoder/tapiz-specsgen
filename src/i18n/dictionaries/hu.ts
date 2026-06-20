@@ -129,7 +129,7 @@ export const hu: Dict = {
     },
     cta: {
       eyebrow: "Készen áll a generálásra?",
-      title: "Kevesebb ismétlés. Több idő egy jobb feladatra.",
+      title: "Generáljon okosabban. Tegye közzé gyorsabban.",
       description: "Készítse el egyszer az alapot, majd generáljon következetes specifikációkat minden csoportnak, és archiválja őket.",
       points: [
         "TÁRGYAK ÉS MODULOK",

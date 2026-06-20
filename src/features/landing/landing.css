@@ -294,15 +294,22 @@ body.tapiz-landing-navbar-open .lp-page > :not(.tapiz-landing-navbar):not(.tapiz
   transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease;
 }
 
-.lp-btn svg { transition: transform .18s ease; }
-.lp-btn:hover svg { transform: translateX(3px); }
+.lp-btn-leading,
+.lp-btn-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lp-btn-arrow { transition: transform .18s ease; }
+.lp-btn:hover .lp-btn-arrow { transform: translateX(3px); }
 
 /* Primarna/sekundarna su ravne u mirovanju; signal ivica (dole+desno) na hover.
    Bez translateY lift-a, prstena sa svih strana, glow halo-a ili gradijenta. */
 .lp-btn-primary {
   border-color: transparent !important;
   background: var(--lp-accent);
-  color: var(--color-ink-000);
+  color: #fff !important;
   box-shadow: none;
 }
 
@@ -1558,22 +1565,93 @@ html:not(.dark) .lp-header {
     transparent;
 }
 
+.lp-cta-split {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(22rem, .92fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--lp-accent-border);
+  border-radius: var(--lp-radius-lg);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--lp-accent) 10%, transparent), transparent 48%),
+    var(--lp-surface-glass);
+  box-shadow: var(--lp-shadow-soft);
+  backdrop-filter: blur(10px);
+}
+
+.lp-cta-split::after {
+  content: "";
+  position: absolute;
+  right: -8rem;
+  bottom: -10rem;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--lp-accent) 18%, transparent), transparent 68%);
+  pointer-events: none;
+}
+
 .lp-cta-copy,
 .lp-cta-panel {
-  border-radius: var(--lp-radius-lg);
-  background: var(--lp-surface-glass);
-  box-shadow: var(--lp-shadow-soft);
-  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .lp-cta-copy h2 {
-  max-width: 13ch;
+  max-width: 15ch;
+  font-size: clamp(2.35rem, 4vw, 4rem);
+  line-height: 1;
   letter-spacing: -.04em;
 }
 
+.lp-cta-copy p { max-width: 40rem; }
+
+.lp-cta-panel {
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius);
+  background: color-mix(in srgb, var(--lp-surface-solid) 72%, transparent);
+}
+
+.lp-cta-panel-top {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .lp-cta-panel-top span {
+  min-height: 4.25rem;
   border-radius: var(--lp-radius-sm);
   background: color-mix(in srgb, var(--lp-surface-solid) 70%, transparent);
+}
+
+.lp-cta-actions {
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+.lp-cta-panel small {
+  max-width: 34rem;
+  font-size: .8rem;
+}
+
+@media (max-width: 940px) {
+  .lp-cta-split {
+    grid-template-columns: 1fr;
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .lp-cta-panel-top { grid-template-columns: 1fr; }
 }
 
 .lp-footer {

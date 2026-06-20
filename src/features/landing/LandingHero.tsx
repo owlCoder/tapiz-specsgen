@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MockupFrame } from "@tapizlabs/ui";
+import { Check, LockIcon, MockupFrame } from "@tapizlabs/ui";
 import { useI18n } from "@/i18n/I18nProvider";
 import { Eyebrow } from "./primitives/Eyebrow";
 import { LandingButton } from "./primitives/LandingButton";
@@ -37,7 +37,9 @@ export function LandingHero() {
           </h1>
           <p>{t.description}</p>
           <div className="lp-hero-actions">
-            <LandingButton href="/login">{t.ctaLogin}</LandingButton>
+            <LandingButton href="/login" icon={<LockIcon size={15} />}>
+              {t.ctaLogin}
+            </LandingButton>
           </div>
           <div className="lp-hero-stats">
             {metrics.map((metric) => (

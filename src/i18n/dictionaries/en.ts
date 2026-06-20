@@ -134,7 +134,7 @@ export const en: Dict = {
     },
     cta: {
       eyebrow: "Ready to generate?",
-      title: "Less repetition. More time for a better assignment.",
+      title: "Generate smarter. Publish faster.",
       description:
         "Prepare the foundation once, then generate consistent specifications for every group and keep them in the archive.",
       points: [

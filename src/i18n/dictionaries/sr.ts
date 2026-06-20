@@ -138,7 +138,7 @@ export const sr = {
     },
     cta: {
       eyebrow: "Spreman za generisanje?",
-      title: "Manje ponavljanja. Više vremena za dobar zadatak.",
+      title: "Generiši pametnije. Objavi brže.",
       description:
         "Pripremi osnovu jednom, zatim generiši dosledne specifikacije za sve grupe i sačuvaj ih u arhivi.",
       points: [

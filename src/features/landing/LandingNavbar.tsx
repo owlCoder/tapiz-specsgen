@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckSquare, FileText, LandingNavbarShell, Zap } from "@tapizlabs/ui";
+import { ArrowRight, CheckSquare, FileText, LandingNavbarShell, LockIcon, Zap } from "@tapizlabs/ui";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useI18n } from "@/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/i18n/LanguageSwitcher";
@@ -35,7 +35,9 @@ export function LandingNavbar() {
       items={navItems}
       menuLabel={t.menu}
       mobileActions={(
-        <LandingButton href="/login">{t.login}</LandingButton>
+        <LandingButton href="/login" icon={<LockIcon size={15} />}>
+          {t.login}
+        </LandingButton>
       )}
       mobileDialogLabel={t.menu}
       mobileLanguageSwitcher={<LanguageSwitcher hideShortCode />}

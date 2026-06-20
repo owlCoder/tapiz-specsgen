@@ -36,7 +36,9 @@ export function LandingCta() {
               ))}
             </div>
             <div className="lp-hero-actions lp-cta-actions">
-              <LandingButton href="/login">{t.login}</LandingButton>
+              <LandingButton href="/login" icon={<LockIcon size={15} />}>
+                {t.login}
+              </LandingButton>
             </div>
             <small>{t.note}</small>
           </div>

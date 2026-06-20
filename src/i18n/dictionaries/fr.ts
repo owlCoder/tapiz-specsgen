@@ -129,7 +129,7 @@ export const fr: Dict = {
     },
     cta: {
       eyebrow: "Prêt à générer ?",
-      title: "Moins de répétition. Plus de temps pour un meilleur projet.",
+      title: "Générez mieux. Publiez plus vite.",
       description: "Préparez la base une fois, générez des spécifications cohérentes pour chaque groupe et archivez-les.",
       points: [
         "COURS ET MODULES",
