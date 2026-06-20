@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Globe } from "@tapizlabs/ui";
-import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "./config";
-import { setLocaleAction } from "./actions";
+import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, LOCALE_COOKIE, type Locale } from "./config";
 import { useI18n } from "./I18nProvider";
+
+function setLocaleCookie(value: Locale) {
+  document.cookie = `${LOCALE_COOKIE}=${value}; path=/; max-age=31536000; samesite=lax`;
+}
 
 /* Dropdown u stilu LanguageSwitcher-a iz tapiz-reactjs-ui:
    - full: landing/auth navbar, otvara se nadole;
@@ -89,8 +93,8 @@ export function LanguageSwitcher({
   collapsed = false,
 }: LanguageSwitcherProps) {
   const { locale, dict } = useI18n();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [, startTransition] = useTransition();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -102,8 +106,9 @@ export function LanguageSwitcher({
   }, []);
 
   const select = (value: Locale) => {
+    setLocaleCookie(value);
     setOpen(false);
-    startTransition(() => setLocaleAction(value));
+    router.refresh();
   };
 
   if (collapsed) {

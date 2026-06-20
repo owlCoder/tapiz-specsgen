@@ -1,6 +1,5 @@
-import { RegisterForm } from "@/features/auth/RegisterForm";
-import { lmsSsoEnabled } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default function RegisterPage() {
-  return <RegisterForm ssoEnabled={lmsSsoEnabled} />;
+  redirect("/login");
 }

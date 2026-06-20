@@ -1,20 +1,21 @@
 "use client";
 
-import { useTransition } from "react";
 import { Gear, LogOut, Moon, Sun, X } from "@tapizlabs/ui";
 import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useI18n } from "@/i18n/I18nProvider";
-import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, type Locale } from "@/i18n/config";
-import { setLocaleAction } from "@/i18n/actions";
+import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, LOCALE_COOKIE, type Locale } from "@/i18n/config";
+
+function setLocaleCookie(value: Locale) {
+  document.cookie = `${LOCALE_COOKIE}=${value}; path=/; max-age=31536000; samesite=lax`;
+}
 
 export interface AppNavItem {
   label: string;
   active: boolean;
   icon: ReactNode;
-  /** Cilj navigacije — desktop sidebar i donji bar renderuju Link (prefetch). */
-  href: string;
-  onClick?: () => void;
+  onClick: () => void;
   disabled?: boolean;
 }
 
@@ -57,14 +58,15 @@ function ActionButton({
       <span className={`flex items-center justify-center ${warn ? "text-warn" : "text-txt-3"}`}>
         {icon}
       </span>
-      <span className={`text-center font-mono text-[11px] font-medium ${warn ? "text-warn" : "text-txt-2"}`}>
+      <span
+        className={`text-center font-mono text-[11px] font-medium ${warn ? "text-warn" : "text-txt-2"}`}
+      >
         {label}
       </span>
     </button>
   );
 }
 
-/* Bottom sheet "Više" meni — porta /ui MobileDrawerSheet šablona na boards. */
 export function MobileMoreSheet({
   open,
   user,
@@ -76,15 +78,16 @@ export function MobileMoreSheet({
 }: MobileMoreSheetProps) {
   const { theme, toggleTheme } = useTheme();
   const { locale, dict } = useI18n();
-  const [, startTransition] = useTransition();
+  const router = useRouter();
 
   if (!open) return null;
 
   const initials =
-    `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase() || "TB";
+    `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase() || "TZ";
 
   const selectLocale = (value: Locale) => {
-    startTransition(() => setLocaleAction(value));
+    setLocaleCookie(value);
+    router.refresh();
   };
 
   return (
@@ -95,7 +98,7 @@ export function MobileMoreSheet({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-y-auto py-2">
-          {/* Header: korisnik + zatvaranje */}
+          {/* ── User header ───────────────────────────── */}
           <div className="relative mb-2 flex items-center gap-3 border-b border-border px-4 py-3">
             <button
               type="button"
@@ -116,7 +119,7 @@ export function MobileMoreSheet({
             </div>
           </div>
 
-          {/* Nalog: podešavanja / tema / odjava */}
+          {/* ── Account actions ───────────────────────── */}
           <div className="mb-4">
             <p className="px-4 pb-2 pt-2 font-mono text-[10px] font-semibold uppercase tracking-widest text-txt-3">
               {dict.nav.account}
@@ -146,7 +149,7 @@ export function MobileMoreSheet({
               />
             </div>
 
-            {/* Jezik: inline izbor umesto dropdowna — ništa se ne seče */}
+            {/* ── Locale selector ───────────────────────── */}
             <div className="mt-4 px-4">
               <p className="pb-2 font-mono text-[10px] font-semibold uppercase tracking-widest text-txt-3">
                 {dict.common.language}
@@ -166,7 +169,9 @@ export function MobileMoreSheet({
                       }`}
                     >
                       <span className="font-mono text-xs font-bold">{LOCALE_SHORT[l]}</span>
-                      <span className={`font-mono text-[10px] ${active ? "text-primary-300" : "text-txt-4"}`}>
+                      <span
+                        className={`font-mono text-[10px] ${active ? "text-primary-300" : "text-txt-4"}`}
+                      >
                         {LOCALE_LABELS[l]}
                       </span>
                     </button>
@@ -176,7 +181,7 @@ export function MobileMoreSheet({
             </div>
           </div>
 
-          {/* Preostala navigacija */}
+          {/* ── Extra nav groups ──────────────────────── */}
           {navGroups
             .filter((group) => group.items.length > 0)
             .map((group) => (
@@ -187,7 +192,7 @@ export function MobileMoreSheet({
                 <div className="space-y-1.5">
                   {group.items.map((item) => (
                     <button
-                      key={item.label}
+                      key={String(item.label)}
                       type="button"
                       disabled={item.disabled}
                       onClick={
@@ -195,7 +200,7 @@ export function MobileMoreSheet({
                           ? undefined
                           : () => {
                               onClose();
-                              item.onClick?.();
+                              item.onClick();
                             }
                       }
                       className={`flex w-full cursor-pointer items-center gap-2.5 border px-3 py-2.5 text-left text-[13px] transition-colors ${

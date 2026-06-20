@@ -1,75 +1,97 @@
-# tapiz-app-template Rules
+# tapiz-specgen Rules
 
-Starter template za Tapiz satelitske proizvode. Baziran na `tapiz-boards` infrastrukturi — auth, i18n, DB sloj, layout, design system su gotovi; domenski entitet (`items`) je demo koji zamenjuješ sopstvenim.
+Generator specifikacija projektnih zadataka za nastavnike i asistente. Samo `assistant` LMS rola ima pristup. Bez localStorage — svi podaci u MySQL.
 
 ## Stack
 
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind v4
 - MySQL + Drizzle ORM (`mysql2`, Node runtime — NIKAD `runtime = "edge"` na kodu koji dira bazu)
-- Auth.js v5: credentials (email+lozinka) + Tapiz LMS SSO (opciono, uključuje se kad su postavljene `LMS_*` env promenljive)
-- `@tapizlabs/ui` design system, Zod (sva eksterna validacija)
-- **`@tapizlabs/app-kit`** — `ActionResult`/`ok`/`fail`/`isOk` (re-export iz `src/lib/action-result.ts`) i `buildMysqlPoolOptions` (`/db`, koristi `db/client.ts`). NE duplirati lokalno.
-- **`@tapizlabs/identity`** — `LmsProfile` tip, `isLmsManaged` (guard nad LMS-projektovanim profilom), `hasEntitlement`; `@tapizlabs/identity/sso` daje `isLmsSsoEnabled` + `tapizLmsProvider` (provider wiring; override-uje se samo `profile()` za role mapiranje).
-- i18n: 5 lokaliteta (sr, sr-Cyrl, en, fr, hu), `Dict = typeof sr` je garantija kompletnosti
+- Auth.js v5: **isključivo Tapiz LMS SSO** (nema credentials prijave, nema registracije)
+- `lucide-react` za ikone (dodat ručno — nije u template-u)
+- **`@tapizlabs/app-kit`** — `ActionResult`/`ok`/`fail`/`isOk` (re-export iz `src/lib/action-result.ts`)
+- **`@tapizlabs/identity/sso`** — `tapizLmsProvider`, `isLmsSsoEnabled`
+- i18n: 5 lokaliteta (sr, sr-Cyrl, en, fr, hu), `Dict = typeof sr` garantija kompletnosti
 
-## Arhitektura (clean architecture — poštovati smer zavisnosti)
+## Arhitektura
 
 ```
-src/domain/          # tipovi, zod šeme — bez zavisnosti ka ostalim slojevima
-src/application/     # use-case servisi + repo interfejsi u ports/ (DIP); baca DomainError
-src/infrastructure/  # db/schema.ts + db/client.ts (lenji singleton) + repositories/
-src/lib/             # auth.ts / auth.config.ts (split!), guards.ts, actions/, action-result.ts (re-export iz @tapizlabs/app-kit)
-src/features/        # UI po funkcionalnosti (auth, settings, items — zameni items sopstvenim)
-src/components/      # theme/, layout/ (deljeno)
-src/app/             # rute: (auth)/ login+register, (app)/ zaštićene, (public)/ status+changelog
-src/proxy.ts         # Next 16 zamena za middleware — auth zaštita ruta
-src/app.config.ts    # jedina tačka parametrizacije — ime, boje, lmsClientId, verzija
+src/domain/          # tipovi, zod šeme
+src/application/     # servisi + ports/ (DIP)
+  courses.service.ts      # seedIfEmpty() pri prvom startovanju
+  settings.service.ts     # getOrCreate() — singleton red id='1'
+  archive.service.ts      # create() + getAll() + delete()
+src/infrastructure/
+  db/schema.ts            # app_settings, courses, archive_entries, archive_variants, users, app_events
+  repositories/
+    courses.repo.ts       # mapRow() konvertuje tinyint→boolean, JSON kolone
+    settings.repo.ts      # upsert pattern
+    archive.repo.ts       # transakcija entry+variants, cascade delete
+src/lib/
+  auth.ts                 # SAMO lmsProvider, blokira student rolu u signIn callback-u
+  guards.ts               # requireAdmin()
+  actions/
+    courses.actions.ts    # getCoursesAction, createCourseAction, updateCourseAction, deleteCourseAction
+    settings.actions.ts   # getSettingsAction, updateSettingsAction
+    archive.actions.ts    # getArchiveAction, createArchiveEntryAction, deleteArchiveEntryAction
+src/features/specgen/
+  types/spec.types.ts     # Course, Module, Scenario, Entitet, AppSettings, ArchiveEntry...
+  lib/
+    variant.ts            # deterministička generacija varijanti (hashStr + mulberry32 seeded RNG)
+    seed.ts               # SEED_COURSES (ODP, OIB, ERS), SEED_SETTINGS
+    uid.ts                # uid() wrapper
+  components/
+    SpecGenApp.tsx         # "use client" — glavni state, routing između viewova
+    Listing.tsx / Editor.tsx / Generate.tsx / Preview.tsx / ArchiveView.tsx / SettingsView.tsx
+src/app/(app)/page.tsx    # server: requireAdmin → seedIfEmpty → učitaj sve → <SpecGenApp>
+src/proxy.ts              # zaštita ruta (/ je zaštićen, ne u PUBLIC_PATHS)
 ```
 
-- Server actions: zod parse → guard → application servis → `revalidatePath`. Vraćaju `ActionResult<T>` — nikad ne bacaju ka klijentu.
-- Autorizacija uvek na serveru: svaki action zove `requireUser()` / `requireAdmin()` iz `lib/guards.ts`.
-- Poslovna pravila žive u `application/` servisima, ne u akcijama ni komponentama.
+## Auth pravila
 
-## Kako koristiti template za novi proizvod
+- Jedini provider: `tapizLmsProvider` iz `@tapizlabs/identity/sso`
+- U `signIn` callback-u: odbija se svako ko nije `assistant` (mapira na `"admin"`)
+- `student` rola → redirect `/login?error=lms-role`
+- Bez LMS env promenljivih → SSO dugme se ne prikazuje (lokalni dev)
+- **Nema** `/register` stranice u smislu samoprijave — ostaje template stranica ali se ne koristi
 
-1. **`src/app.config.ts`** — promeni `name`, `shortName`, `description`, `accentColor`, `lmsClientId`, `productionUrl`.
-2. **`src/infrastructure/db/schema.ts`** — zameni/proširi `items` tabelu sopstvenim entitetima.
-3. **`src/domain/`** — dodaj tipove i Zod šeme za novi domen (zadrži `user.types.ts`).
-4. **`src/application/ports/`** — definiši repo interfejse za nove entitete (zadrži `users.port.ts`, `events.port.ts`).
-5. **`src/infrastructure/repositories/`** — implementiraj repoe (zadrži `users.repo.ts`, `events.repo.ts`).
-6. **`src/application/`** — napiši servise (zadrži `users.service.ts`, `sso.service.ts`, `events.service.ts`).
-7. **`src/lib/actions/`** — dodaj server akcije za novi domen (zadrži `auth.actions.ts`, `profile.actions.ts`).
-8. **`src/features/`** — zameni `items/` sopstvenim feature-ima; `auth/` i `settings/` ostaju.
-9. **`src/i18n/dictionaries/sr.ts`** — dodaj sekcije za novi domen, obriši `items` sekciju; ostali jezici prate istu šemu.
-10. **`src/app/(app)/`** — dodaj stranice; zameni `/items` sopstvenim rutama.
-11. **`src/components/layout/AppShellLayout.tsx`** — ažuriraj navigacione linkove.
-12. **`src/proxy.ts`** — ažuriraj `PUBLIC_PATHS` ako dodaješ javne rute.
+## DB šema — ključne napomene
 
-## Kritične začkoljice
+- `courses` ima JSON kolone (`modules`, `scenarios`, `non_functional`, `deliverables`, `grading`, `tech_stack`) — menjati samo kroz `.$type<T>()` castove
+- `tinyint` za booleane (MySQL nema native bool) — `mapRow()` u courses.repo.ts konvertuje na `boolean`
+- `archive_variants.entry_id` → FK sa `ON DELETE CASCADE`
+- `app_settings` uvek ima tačno jedan red (id='1') — koristiti `getOrCreate()`/`upsert`
 
-- **`"type": "module"` u package.json je OBAVEZAN** — `@tapizlabs/app-kit` i `@tapizlabs/identity` su ESM-only (samo `import` uslov u `exports`). Bez `type: module`, `tsx` skripta `smoke` učitava `.ts` kao CJS i puca sa `ERR_PACKAGE_PATH_NOT_EXPORTED` na `@tapizlabs/app-kit/db`. (Next/Turbopack radi i bez toga.)
-- **`@source "../../node_modules/@tapizlabs/ui/dist/index.js"` u globals.css je OBAVEZAN** — komponente design systema nose Tailwind klase u dist bundle-u; bez ovoga su "gole".
-- `@tapizlabs/ui` bundle NEMA `"use client"` — stateful komponente (modali, Switch, Tabs, useToast...) koristiti samo unutar client komponenti.
-- Auth.js split config: `src/lib/auth.config.ts` je edge-safe (koristi ga proxy) — NE importovati bcrypt/mysql2/repoe u njega.
-- Next 16: `params`/`searchParams` su `Promise` — `await params`.
-- Drizzle klijent je lenji Proxy (`src/infrastructure/db/client.ts`) da build prolazi bez `DATABASE_URL`.
-- `Badge` varijante: `default|success|warning|danger|info|muted`. `Button` ikone prosleđivati kao element: `icon={<Plus size={16} />}`.
-- Role su `"admin" | "user"` (ne boards-ove `"assistant" | "student"`). LMS SSO mapira: `student → "user"`, `assistant → "admin"`.
-- Reset stanja modala pri otvaranju radi se **tokom rendera** (prevOpen šablon iz React docs), ne kroz `useEffect`.
+## SpecGenApp pattern
+
+Server page učitava sve podatke i prosleđuje kao props. Client state se inicijalizuje iz props — **bez useEffect za inicijalni load**. Mutacije pozivaju server akcije, pa optimistički ažuriraju lokalni state.
+
+`ActionResult<T>` narrowing: uvek ekstraktovati `result.data` u lokalnu promenljivu PRE korišćenja u setState callback-u:
+```ts
+const result = await createCourseAction(input);
+if (!result.ok) return;
+const created = result.data;   // <-- ekstraktovati ovde
+setCourses(p => [...p, created]);
+```
 
 ## Komande
 
 ```bash
-npm install                  # instalacija zavisnosti
-npm run dev                  # lokalni razvoj (port 3005)
-npm run db:push              # drizzle šema → baza (interaktivno, nikad --force)
-npm run lint && npm run typecheck && npm run build   # provera pre završetka taska
-npx tsx --env-file=.env scripts/smoke.ts             # smoke test poslovne logike (traži bazu)
+npm install                  # instalacija
+npm run dev                  # lokalni razvoj (port 3006)
+npm run db:push              # drizzle šema → baza
+npm run lint && npm run typecheck && npm run build   # provera pre završetka
+```
+
+## Lokalni Docker setup
+
+```
+MySQL kontejner: tapiz-hub-mysql (port 3311)
+Baza: tapiz_specgen
+Korisnik: root / root
+DATABASE_URL="mysql://root:root@localhost:3311/tapiz_specgen"
 ```
 
 ## Deploy (Vercel + Aiven MySQL)
 
-- Env: `DATABASE_URL`, `DATABASE_SSL_CA_BASE64` (base64 Aiven `ca.pem`), `AUTH_SECRET`, `AUTH_TRUST_HOST=true`, opciono 4 `LMS_*` promenljive.
-- `DATABASE_SSL_CA_BASE64` aktivira TLS ka Aivenu u `db/client.ts` (mysql2 `ssl: { ca, rejectUnauthorized: true }`).
-- Health endpoint: `GET /api/health`.
-- Za `db:push` ka Aivenu sa lokalne mašine: URL-u dodati `?ssl={"rejectUnauthorized":false}`.
+- Env: `DATABASE_URL`, `DATABASE_SSL_CA_BASE64`, `AUTH_SECRET`, `AUTH_TRUST_HOST=true`, 4x `LMS_*`
+- Health endpoint: `GET /api/health`

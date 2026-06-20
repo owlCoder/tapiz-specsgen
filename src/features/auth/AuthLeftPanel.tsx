@@ -11,7 +11,7 @@ export function AuthLeftPanel() {
     <div className="auth-aside hidden flex-col justify-between lg:flex lg:w-[46%]">
       {/* Brend */}
       <div className="relative z-10 flex items-center gap-3 p-10 animate-fade-in-down">
-        <LogoMark size={46} />
+        <LogoMark size={46} variant="specs" />
         <div>
           <div className="font-display text-[22px] font-bold tracking-tight text-txt-1">
             {appConfig.name}
@@ -61,7 +61,7 @@ export function AuthLeftPanel() {
       {/* Footer */}
       <div className="relative z-10 flex items-center justify-between border-t border-border px-10 py-4 animate-fade-in-up">
         <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-txt-4">
-          © {new Date().getFullYear()} {appConfig.name.toUpperCase()}
+          © {new Date().getFullYear()} TAPIZ · SPECS+
         </span>
         <span className="flex items-center gap-2 font-mono text-[10px] text-txt-4">
           <span className="h-1.5 w-1.5 rounded-full bg-good animate-pulse" />

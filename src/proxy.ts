@@ -10,7 +10,7 @@ export default auth((req) => {
   const isAuthPage = nextUrl.pathname === "/login" || nextUrl.pathname === "/register";
   const isPublic =
     isAuthPage ||
-    ["/", "/status", "/changelog", "/api/health"].includes(nextUrl.pathname);
+    ["/status", "/changelog", "/api/health"].includes(nextUrl.pathname);
 
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL("/login", nextUrl));

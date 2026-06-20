@@ -1,58 +1,75 @@
-import { usersService } from "../src/application/users.service";
-import { itemsService } from "../src/application/items.service";
+import { coursesService } from "../src/application/courses.service";
+import { settingsService } from "../src/application/settings.service";
+import { archiveService } from "../src/application/archive.service";
 
 async function main() {
-  // 1. klasična registracija
+  // 1. Settings
+  const settings = await settingsService.getOrCreate();
+  console.log("settings:", settings.faculty, settings.academicYear);
+
+  // 2. Seed if empty
+  await coursesService.seedIfEmpty();
+  const courses = await coursesService.getAll();
+  if (courses.length === 0) throw new Error("seed FAIL: no courses");
+  console.log("courses:", courses.length, "—", courses[0].name);
+
+  // 3. Create course
   const stamp = Date.now();
-  const user = await usersService.register({
-    firstName: "Petar", lastName: "Đorđević",
-    email: `petar.smoke.${stamp}@example.com`, password: "lozinka123",
+  const course = await coursesService.create({
+    name: `Smoke predmet ${stamp}`,
+    abbr: "SMK",
+    yearOfStudy: 3,
+    semester: 6,
+    projectType: "timski",
+    teamSize: 3,
+    description: "",
+    techStack: { jezik: "TS", backend: "Node", frontend: "React", baza: "MySQL", ostalo: "" },
+    usesAgileBoard: false,
+    agileTool: "",
+    optionalCount: 0,
+    varyByTeam: false,
+    numTeams: 1,
+    entityVarMin: 0,
+    entityVarMax: 0,
+    modules: [],
+    scenarios: [],
+    nonFunctional: [],
+    deliverables: [],
+    grading: [],
+    notes: "",
   });
-  console.log("user:", user.email);
+  console.log("course created:", course.id, course.name);
 
-  // duplikat emaila
-  try {
-    await usersService.register({ firstName: "Ana", lastName: "Anić", email: user.email, password: "lozinka123" });
-    throw new Error("duplikat FAIL");
-  } catch (e) { console.log("duplikat emaila odbijen:", (e as Error).message); }
+  // 4. Update
+  const updated = await coursesService.update(course.id, { ...course, name: `Smoke predmet ${stamp} (izmenjen)` });
+  if (!updated.name.includes("izmenjen")) throw new Error("update FAIL");
+  console.log("update OK:", updated.name);
 
-  // 2. create item
-  const item = await itemsService.create(user.id, "Smoke stavka", "opis");
-  console.log("item:", item.id, item.title, item.status);
-
-  // 3. update item
-  await itemsService.update(user.id, item.id, { title: "Smoke stavka (izmenjena)", description: "novi opis" });
-  const updated = await itemsService.getById(item.id);
-  if (updated.title !== "Smoke stavka (izmenjena)") throw new Error("update FAIL");
-  console.log("update OK:", updated.title);
-
-  // 4. setStatus
-  await itemsService.setStatus(user.id, item.id, "done");
-  const done = await itemsService.getById(item.id);
-  if (done.status !== "done") throw new Error("setStatus FAIL");
-  console.log("setStatus OK:", done.status);
-
-  // 5. list — treba 1 item
-  const list = await itemsService.listForUser(user.id);
-  if (list.length !== 1) throw new Error(`listForUser FAIL: očekivano 1, dobijeno ${list.length}`);
-  console.log("list OK:", list.length);
-
-  // 6. ownership check — drugi korisnik ne može da menja
-  const other = await usersService.register({
-    firstName: "Mila", lastName: "Šarić",
-    email: `mila.smoke.${stamp}@example.com`, password: "lozinka123",
+  // 5. Archive
+  const entry = await archiveService.create({
+    courseId: course.id,
+    courseName: course.name,
+    abbr: course.abbr,
+    academicYear: settings.academicYear,
+    faculty: settings.faculty,
+    variants: [{ teamIndex: 0, code: "SMK-1000-1", scenario: "", markdown: "# Test" }],
   });
-  try {
-    await itemsService.update(other.id, item.id, { title: "HACK" });
-    throw new Error("ownership FAIL");
-  } catch (e) { console.log("ownership check OK:", (e as Error).message); }
+  console.log("archive created:", entry.id);
 
-  // 7. delete
-  await itemsService.delete(user.id, item.id);
-  const afterDelete = await itemsService.listForUser(user.id);
-  if (afterDelete.length !== 0) throw new Error("delete FAIL");
-  console.log("delete OK");
+  const archive = await archiveService.getAll();
+  if (!archive.some((a) => a.id === entry.id)) throw new Error("archive findAll FAIL");
+
+  // 6. Cleanup
+  await archiveService.delete(entry.id);
+  await coursesService.delete(course.id);
+  console.log("cleanup OK");
 
   console.log("SMOKE OK");
 }
-main().then(() => process.exit(0)).catch((e) => { console.error("SMOKE FAIL:", e); process.exit(1); });
+
+main()
+  .then(() => process.exit(0))
+  .catch((e) => {
+    console.error("SMOKE FAIL:", e);
+    process.exit(1);
+  });
