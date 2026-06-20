@@ -192,7 +192,7 @@ export const sr = {
       rights: "Sva prava zadržana.",
     },
   },
-  specgen: {
+  specsgen: {
     title: "Generator specifikacija",
     description: "Generisanje specifikacija projektnih zadataka.",
     productTagline: "Specifikacije",

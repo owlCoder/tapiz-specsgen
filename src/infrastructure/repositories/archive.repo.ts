@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/infrastructure/db/client";
 import { archiveEntries, archiveVariants } from "@/infrastructure/db/schema";
 import type { IArchiveRepo, NewArchiveEntry } from "@/application/ports/archive.port";
-import type { ArchiveEntry } from "@/features/specgen/types/spec.types";
+import type { ArchiveEntry } from "@/features/specsgen/types/spec.types";
 
 export const archiveRepo: IArchiveRepo = {
   async findAll() {

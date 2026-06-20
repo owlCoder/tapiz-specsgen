@@ -3,7 +3,7 @@
 import { requireAdmin } from "@/lib/guards";
 import { settingsService } from "@/application/settings.service";
 import { ok, fail, type ActionResult } from "@/lib/action-result";
-import type { AppSettings } from "@/features/specgen/types/spec.types";
+import type { AppSettings } from "@/features/specsgen/types/spec.types";
 
 export async function getSettingsAction(): Promise<ActionResult<AppSettings>> {
   try {

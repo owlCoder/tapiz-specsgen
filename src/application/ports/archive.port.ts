@@ -1,4 +1,4 @@
-import type { ArchiveEntry, ArchiveVariant } from "@/features/specgen/types/spec.types";
+import type { ArchiveEntry, ArchiveVariant } from "@/features/specsgen/types/spec.types";
 
 export interface NewArchiveEntry {
   courseId: string | null;

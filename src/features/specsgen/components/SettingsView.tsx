@@ -21,7 +21,7 @@ interface Props {
 
 export function SettingsView({ settings: initialSettings, onSaved }: Props) {
   const { dict } = useI18n();
-  const t = dict.specgen.settings;
+  const t = dict.specsgen.settings;
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);

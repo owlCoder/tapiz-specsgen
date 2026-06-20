@@ -3,7 +3,7 @@
 import { requireAdmin } from "@/lib/guards";
 import { archiveService } from "@/application/archive.service";
 import { ok, fail, type ActionResult } from "@/lib/action-result";
-import type { ArchiveEntry } from "@/features/specgen/types/spec.types";
+import type { ArchiveEntry } from "@/features/specsgen/types/spec.types";
 import type { NewArchiveEntry } from "@/application/ports/archive.port";
 
 export async function getArchiveAction(): Promise<ActionResult<ArchiveEntry[]>> {

@@ -1,4 +1,4 @@
-import type { AppSettings } from "@/features/specgen/types/spec.types";
+import type { AppSettings } from "@/features/specsgen/types/spec.types";
 
 export interface ISettingsRepo {
   getOrCreate(defaults: AppSettings): Promise<AppSettings>;

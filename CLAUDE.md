@@ -1,4 +1,4 @@
-# tapiz-specgen Rules
+# tapiz-specsgen Rules
 
 Generator specifikacija projektnih zadataka za nastavnike i asistente. Samo `assistant` LMS rola ima pristup. Bez localStorage — svi podaci u MySQL.
 
@@ -33,7 +33,7 @@ src/lib/
     courses.actions.ts    # getCoursesAction, createCourseAction, updateCourseAction, deleteCourseAction
     settings.actions.ts   # getSettingsAction, updateSettingsAction
     archive.actions.ts    # getArchiveAction, createArchiveEntryAction, deleteArchiveEntryAction
-src/features/specgen/
+src/features/specsgen/
   types/spec.types.ts     # Course, Module, Scenario, Entitet, AppSettings, ArchiveEntry...
   lib/
     variant.ts            # deterministička generacija varijanti (hashStr + mulberry32 seeded RNG)
@@ -86,9 +86,9 @@ npm run lint && npm run typecheck && npm run build   # provera pre završetka
 
 ```
 MySQL kontejner: tapiz-hub-mysql (port 3311)
-Baza: tapiz_specgen
+Baza: tapiz_specsgen
 Korisnik: root / root
-DATABASE_URL="mysql://root:root@localhost:3311/tapiz_specgen"
+DATABASE_URL="mysql://root:root@localhost:3311/tapiz_specsgen"
 ```
 
 ## Deploy (Vercel + Aiven MySQL)

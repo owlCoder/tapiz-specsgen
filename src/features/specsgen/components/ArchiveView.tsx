@@ -44,7 +44,7 @@ interface Props {
 
 export function ArchiveView({ archive, onDeleted }: Props) {
   const { dict, locale } = useI18n();
-  const t = dict.specgen.archive;
+  const t = dict.specsgen.archive;
   const [open, setOpen] = useState<string | null>(null);
   const [viewMd, setViewMd] = useState<ViewMd | null>(null);
   const [deleting, setDeleting] = useState<ArchiveEntry | null>(null);

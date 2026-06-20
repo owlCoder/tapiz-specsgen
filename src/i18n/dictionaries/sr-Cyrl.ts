@@ -181,7 +181,7 @@ export const srCyrl: Dict = {
       rights: "Сва права задржана.",
     },
   },
-  specgen: {
+  specsgen: {
     title: "Генератор спецификација",
     description: "Генерисање спецификација пројектних задатака.",
     productTagline: "Спецификације",

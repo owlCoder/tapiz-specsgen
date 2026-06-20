@@ -1,4 +1,4 @@
-import type { Course, CourseInput } from "@/features/specgen/types/spec.types";
+import type { Course, CourseInput } from "@/features/specsgen/types/spec.types";
 
 export interface ICoursesRepo {
   findAll(): Promise<Course[]>;

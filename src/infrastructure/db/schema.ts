@@ -10,7 +10,7 @@ import {
   tinyint,
   varchar,
 } from "drizzle-orm/mysql-core";
-import type { Deliverable, GradingItem, Module, Scenario, TechStack } from "@/features/specgen/types/spec.types";
+import type { Deliverable, GradingItem, Module, Scenario, TechStack } from "@/features/specsgen/types/spec.types";
 
 const id = () =>
   varchar("id", { length: 36 })

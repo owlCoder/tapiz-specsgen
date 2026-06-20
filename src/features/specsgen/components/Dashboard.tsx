@@ -100,7 +100,7 @@ function QuickAction({
     <button
       type="button"
       onClick={onClick}
-      className="group relative flex w-full items-center gap-3.5 bg-ink-200 p-[18px_20px] text-left transition-colors hover:bg-ink-300"
+      className="group relative flex w-full items-center gap-3.5 bg-ink-200 px-5 py-4.5 text-left transition-colors hover:bg-ink-300"
     >
       <span
         className={`absolute bottom-0 left-0 top-0 w-0.75 ${line} opacity-0 transition-opacity group-hover:opacity-100`}
@@ -144,7 +144,7 @@ export function Dashboard({
   onOpenSettings,
 }: Props) {
   const { dict, locale } = useI18n();
-  const t = dict.specgen.dashboard;
+  const t = dict.specsgen.dashboard;
 
   // Sat se osvežava svake minute — strip pokazuje živo vreme.
   const [now, setNow] = useState(() => new Date());
@@ -260,7 +260,7 @@ export function Dashboard({
               {recent.map((e) => (
                 <div
                   key={e.id}
-                  className="flex items-center gap-3.5 bg-ink-200 p-[14px_18px]"
+                  className="flex items-center gap-3.5 bg-ink-200 px-4.5 py-3.5"
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-border-hi bg-ink-300 text-primary-300">
                     <History size={15} />

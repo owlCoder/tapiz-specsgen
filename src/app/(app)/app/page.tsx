@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/guards";
 import { coursesService } from "@/application/courses.service";
 import { settingsService } from "@/application/settings.service";
 import { archiveService } from "@/application/archive.service";
-import { SpecGenApp } from "@/features/specgen";
+import { SpecGenApp } from "@/features/specsgen";
 
 export const dynamic = "force-dynamic";
 

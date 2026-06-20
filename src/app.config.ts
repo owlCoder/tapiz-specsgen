@@ -5,9 +5,9 @@ const appConfig = {
   version: "0.1.0",
   lastUpdate: "Jun 2026.",
   author: "Tapiz Labs",
-  productionUrl: "https://specgen.vercel.app",
-  accentColor: "indigo",
-  lmsClientId: "tapiz-specgen",
+  productionUrl: "https://specsgen.vercel.app",
+  accentColor: "cyan",
+  lmsClientId: "tapiz-specsgen",
 } as const;
 
 export default appConfig;

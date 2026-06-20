@@ -13,7 +13,7 @@
  * derived from the actual folders.
  */
 import { readdirSync, existsSync, readFileSync, writeFileSync, statSync } from "node:fs";
-import { join, basename, resolve } from "node:path";
+import { join, basename } from "node:path";
 
 const ROOT = process.cwd();
 const repo = basename(ROOT);

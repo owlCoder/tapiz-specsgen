@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/infrastructure/db/client";
 import { appSettings } from "@/infrastructure/db/schema";
 import type { ISettingsRepo } from "@/application/ports/settings.port";
-import type { AppSettings } from "@/features/specgen/types/spec.types";
+import type { AppSettings } from "@/features/specsgen/types/spec.types";
 
 function mapRow(row: typeof appSettings.$inferSelect): AppSettings {
   return {

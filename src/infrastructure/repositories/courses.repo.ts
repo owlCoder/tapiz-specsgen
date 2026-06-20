@@ -2,7 +2,7 @@ import { eq, count } from "drizzle-orm";
 import { db } from "@/infrastructure/db/client";
 import { courses } from "@/infrastructure/db/schema";
 import type { ICoursesRepo } from "@/application/ports/courses.port";
-import type { Course, CourseInput } from "@/features/specgen/types/spec.types";
+import type { Course, CourseInput } from "@/features/specsgen/types/spec.types";
 
 function toBoolean(val: number | null | undefined): boolean {
   return val === 1;

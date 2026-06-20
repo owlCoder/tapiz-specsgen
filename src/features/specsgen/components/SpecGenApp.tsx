@@ -10,7 +10,6 @@ import {
   History,
   Home,
   LogoMark,
-  Plus,
   SidePanel,
   X,
 } from "@tapizlabs/ui";
@@ -74,7 +73,7 @@ interface Props {
 
 export function SpecGenApp({ initialSettings, initialCourses, initialArchive, user }: Props) {
   const { dict } = useI18n();
-  const t = dict.specgen;
+  const t = dict.specsgen;
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [archive, setArchive] = useState<ArchiveEntry[]>(initialArchive);
@@ -86,7 +85,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
-    return window.localStorage.getItem("tapiz-specgen-sidebar-collapsed") === "true";
+    return window.localStorage.getItem("tapiz-specsgen-sidebar-collapsed") === "true";
   });
 
   const nameParts = user.name.trim().split(/\s+/);
@@ -158,7 +157,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
   const toggleSidebarCollapsed = () => {
     setSidebarCollapsed((prev) => {
       const next = !prev;
-      window.localStorage.setItem("tapiz-specgen-sidebar-collapsed", String(next));
+      window.localStorage.setItem("tapiz-specsgen-sidebar-collapsed", String(next));
       return next;
     });
   };

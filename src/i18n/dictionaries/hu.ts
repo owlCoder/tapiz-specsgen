@@ -181,7 +181,7 @@ export const hu: Dict = {
       rights: "Minden jog fenntartva.",
     },
   },
-  specgen: {
+  specsgen: {
     title: "Specifikáció-generátor",
     description: "Projektfeladat-specifikációk generátora.",
     productTagline: "Specifikációk",

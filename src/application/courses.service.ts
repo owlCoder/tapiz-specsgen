@@ -1,6 +1,6 @@
 import { coursesRepo } from "@/infrastructure/repositories/courses.repo";
-import { SEED_COURSES } from "@/features/specgen/lib/seed";
-import type { Course, CourseInput } from "@/features/specgen/types/spec.types";
+import { SEED_COURSES } from "@/features/specsgen/lib/seed";
+import type { Course, CourseInput } from "@/features/specsgen/types/spec.types";
 
 export const coursesService = {
   async getAll(): Promise<Course[]> {

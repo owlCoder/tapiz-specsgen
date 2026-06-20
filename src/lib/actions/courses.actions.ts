@@ -3,7 +3,7 @@
 import { requireAdmin } from "@/lib/guards";
 import { coursesService } from "@/application/courses.service";
 import { ok, fail, type ActionResult } from "@/lib/action-result";
-import type { Course, CourseInput } from "@/features/specgen/types/spec.types";
+import type { Course, CourseInput } from "@/features/specsgen/types/spec.types";
 
 export async function getCoursesAction(): Promise<ActionResult<Course[]>> {
   try {

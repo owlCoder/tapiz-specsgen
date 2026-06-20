@@ -65,7 +65,7 @@ interface Props {
 
 export function Editor({ editing, setEditing }: Props) {
   const { dict } = useI18n();
-  const t = dict.specgen.editor;
+  const t = dict.specsgen.editor;
   const up = (p: Partial<Course>) => setEditing({ ...editing, ...p });
   const upTS = (p: Partial<Course["techStack"]>) =>
     setEditing({ ...editing, techStack: { ...editing.techStack, ...p } });

@@ -187,7 +187,7 @@ export const en: Dict = {
       rights: "All rights reserved.",
     },
   },
-  specgen: {
+  specsgen: {
     title: "Spec Generator",
     description: "Project specification generator.",
     productTagline: "Specifications",

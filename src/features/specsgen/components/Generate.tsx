@@ -37,7 +37,7 @@ interface Props {
 
 export function Generate({ course, settings, onArchived }: Props) {
   const { dict } = useI18n();
-  const t = dict.specgen.generate;
+  const t = dict.specsgen.generate;
   const [team, setTeam] = useState(0);
   const [copied, setCopied] = useState(false);
   const [archiving, setArchiving] = useState(false);

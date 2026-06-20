@@ -1,6 +1,6 @@
 import { settingsRepo } from "@/infrastructure/repositories/settings.repo";
-import { SEED_SETTINGS } from "@/features/specgen/lib/seed";
-import type { AppSettings } from "@/features/specgen/types/spec.types";
+import { SEED_SETTINGS } from "@/features/specsgen/lib/seed";
+import type { AppSettings } from "@/features/specsgen/types/spec.types";
 
 export const settingsService = {
   async getOrCreate(): Promise<AppSettings> {

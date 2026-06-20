@@ -1,5 +1,5 @@
 /**
- * Lokalni MD → PDF (izuzetak: u specgenu PDF se renderuje lokalno, ne preko Tapiz PDF API-ja).
+ * Lokalni MD → PDF (izuzetak: u specsgenu PDF se renderuje lokalno, ne preko Tapiz PDF API-ja).
  *
  * Dva ulaza:
  *  1. `printSpecPdf(course, settings, variant)` — generiše PROFESIONALAN akademski dokument

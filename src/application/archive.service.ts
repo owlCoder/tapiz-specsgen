@@ -1,5 +1,5 @@
 import { archiveRepo } from "@/infrastructure/repositories/archive.repo";
-import type { ArchiveEntry } from "@/features/specgen/types/spec.types";
+import type { ArchiveEntry } from "@/features/specsgen/types/spec.types";
 import type { NewArchiveEntry } from "@/application/ports/archive.port";
 
 export const archiveService = {

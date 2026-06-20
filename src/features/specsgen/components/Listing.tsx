@@ -45,7 +45,7 @@ export function Listing({
   hideHeader = false,
 }: Props) {
   const { dict } = useI18n();
-  const t = dict.specgen.listing;
+  const t = dict.specsgen.listing;
   const [deleting, setDeleting] = useState<Course | null>(null);
 
   return (
