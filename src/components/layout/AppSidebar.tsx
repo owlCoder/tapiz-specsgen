@@ -69,7 +69,7 @@ export function AppSidebar({
             {!collapsed && (
               <div className="min-w-0">
                 <div className="truncate font-display text-[17px] font-bold tracking-[-0.02em] text-txt-1">
-                  Tapiz Specs+
+                  Tapiz Specs
                 </div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-txt-3">
                   {dict.specsgen.productTagline}

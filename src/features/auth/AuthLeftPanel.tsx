@@ -61,7 +61,7 @@ export function AuthLeftPanel() {
       {/* Footer */}
       <div className="relative z-10 flex items-center justify-between border-t border-border px-10 py-4 animate-fade-in-up">
         <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-txt-4">
-          © {new Date().getFullYear()} TAPIZ · SPECS+
+          © {new Date().getFullYear()} TAPIZ · SPECS
         </span>
         <span className="flex items-center gap-2 font-mono text-[10px] text-txt-4">
           <span className="h-1.5 w-1.5 rounded-full bg-good animate-pulse" />

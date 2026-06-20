@@ -243,7 +243,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
             >
               <LogoMark size={28} variant="specs" />
               <span className="font-display text-base font-bold tracking-[-0.02em] text-txt-1">
-                Tapiz Specs+
+                Tapiz Specs
               </span>
             </button>
             <ThemeToggle />

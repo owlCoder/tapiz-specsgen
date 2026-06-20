@@ -1,16 +1,16 @@
 "use client";
 
-import { FileText, Layers, LockIcon, Zap } from "@tapizlabs/ui";
+import { Download, FileText, History, Layers, LockIcon } from "@tapizlabs/ui";
 import type { ReactNode } from "react";
 import { useI18n } from "@/i18n/I18nProvider";
 import { Eyebrow } from "./primitives/Eyebrow";
 
 const FEATURE_ICONS: ReactNode[] = [
-  <FileText key="auth" size={20} />,
-  <Layers key="db" size={20} />,
-  <Zap key="i18n" size={20} />,
-  <LockIcon key="ui" size={20} />,
-  <Zap key="deploy" size={20} />,
+  <Layers key="structure" size={20} />,
+  <FileText key="variants" size={20} />,
+  <Download key="export" size={20} />,
+  <History key="archive" size={20} />,
+  <LockIcon key="access" size={20} />,
 ];
 
 export function LandingFeatures() {

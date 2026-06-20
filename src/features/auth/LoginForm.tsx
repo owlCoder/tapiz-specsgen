@@ -7,9 +7,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 export function LoginForm({
   ssoError,
 }: {
-  justRegistered?: boolean;
   ssoError: string | null;
-  ssoEnabled?: boolean;
 }) {
   const { dict } = useI18n();
   const t = dict.auth;
@@ -43,7 +41,7 @@ export function LoginForm({
           variant="outline-primary"
           fullWidth
           size="lg"
-          icon={<LogoMark size={18} tone="outline" />}
+          icon={<LogoMark size={18} tone="outline" variant="specs" />}
         >
           {t.lmsLogin}
         </Button>

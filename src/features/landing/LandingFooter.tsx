@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { CheckSquare, ExternalLink, FileText, History, LockIcon, Server, UserCheck, Zap } from "@tapizlabs/ui";
+import { CheckSquare, ExternalLink, FileText, History, LockIcon, Server, Zap } from "@tapizlabs/ui";
 import { useI18n } from "@/i18n/I18nProvider";
 import appConfig from "@/app.config";
 import { Brand } from "./primitives/Brand";
@@ -39,23 +39,20 @@ export function LandingFooter() {
         </div>
         <nav aria-label={t.product}>
           <strong>{t.product}</strong>
-          <FooterLink href="#templates" icon={<FileText size={16} />}>
-            {t.templates}
+          <FooterLink href="#generator" icon={<FileText size={16} />}>
+            {t.generator}
           </FooterLink>
           <FooterLink href="#features" icon={<CheckSquare size={16} />}>
             {t.features}
           </FooterLink>
           <FooterLink href="#cta" icon={<Zap size={16} />}>
-            {t.start}
+            {t.accessCta}
           </FooterLink>
         </nav>
         <nav aria-label={t.access}>
           <strong>{t.access}</strong>
           <FooterLink href="/login" icon={<LockIcon size={14} />}>
             {t.login}
-          </FooterLink>
-          <FooterLink href="/login" icon={<UserCheck size={14} />}>
-            {t.register}
           </FooterLink>
         </nav>
         <nav aria-label={t.system}>

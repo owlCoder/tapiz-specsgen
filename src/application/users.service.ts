@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import { isLmsManaged } from "@tapizlabs/identity";
 import type {
   ChangePasswordInput,
-  RegisterInput,
   UpdateProfileInput,
 } from "@/domain/validation/user.schema";
 import type { UserDto } from "@/domain/types";
@@ -11,18 +10,6 @@ import { DomainError } from "./errors";
 
 export const usersService = {
   getById: (id: string) => usersRepo.findById(id),
-
-  async register(input: RegisterInput): Promise<UserDto> {
-    const byEmail = await usersRepo.findByEmail(input.email);
-    if (byEmail) throw new DomainError("Nalog sa ovim emailom već postoji");
-    return usersRepo.create({
-      firstName: input.firstName,
-      lastName: input.lastName,
-      email: input.email,
-      passwordHash: await bcrypt.hash(input.password, 10),
-      role: "user",
-    });
-  },
 
   async updateMyProfile(userId: string, input: UpdateProfileInput): Promise<UserDto> {
     const existing = await usersRepo.findById(userId);

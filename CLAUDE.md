@@ -52,7 +52,7 @@ src/proxy.ts              # zaštita ruta (/ je zaštićen, ne u PUBLIC_PATHS)
 - U `signIn` callback-u: odbija se svako ko nije `assistant` (mapira na `"admin"`)
 - `student` rola → redirect `/login?error=lms-role`
 - Bez LMS env promenljivih → SSO dugme se ne prikazuje (lokalni dev)
-- **Nema** `/register` stranice u smislu samoprijave — ostaje template stranica ali se ne koristi
+- Nema credentials prijave, samostalne registracije ni `/register` rute
 
 ## DB šema — ključne napomene
 

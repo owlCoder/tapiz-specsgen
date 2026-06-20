@@ -7,9 +7,9 @@ import { Eyebrow } from "./primitives/Eyebrow";
 import { LandingButton } from "./primitives/LandingButton";
 
 const POINT_ICONS: ReactNode[] = [
-  <FileText key="template" size={15} />,
-  <CheckSquare key="ui" size={15} />,
-  <Download key="layers" size={15} />,
+  <FileText key="courses" size={15} />,
+  <CheckSquare key="variants" size={15} />,
+  <Download key="export" size={15} />,
   <LockIcon key="sso" size={15} />,
 ];
 
@@ -36,10 +36,7 @@ export function LandingCta() {
               ))}
             </div>
             <div className="lp-hero-actions lp-cta-actions">
-              <LandingButton href="/login">{t.createAccount}</LandingButton>
-              <LandingButton href="/login" variant="secondary">
-                {t.login}
-              </LandingButton>
+              <LandingButton href="/login">{t.login}</LandingButton>
             </div>
             <small>{t.note}</small>
           </div>

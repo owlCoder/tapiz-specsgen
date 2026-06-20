@@ -8,7 +8,7 @@ export default auth((req) => {
   const { nextUrl } = req;
   const user = req.auth?.user;
   const path = nextUrl.pathname;
-  const isAuthPage = path === "/login" || path === "/register";
+  const isAuthPage = path === "/login";
   // Javne rute: landing (/), auth, status/changelog, health.
   const isPublic =
     path === "/" ||

@@ -1,4 +1,4 @@
-# Tapiz Specs+ (`tapiz-specsgen`)
+# Tapiz Specs (`tapiz-specsgen`)
 
 Generator specifikacija projektnih zadataka za nastavnike i asistente. Iz definicije
 predmeta (moduli, scenariji, entiteti, nefunkcionalni zahtevi, način ocenjivanja)

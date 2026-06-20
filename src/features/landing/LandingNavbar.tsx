@@ -1,6 +1,5 @@
 "use client";
 
-import { Fragment } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckSquare, FileText, LandingNavbarShell, Zap } from "@tapizlabs/ui";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -15,9 +14,9 @@ export function LandingNavbar() {
   const t = dict.landing.nav;
 
   const navItems = [
-    { label: t.templates, href: "#templates", icon: <FileText size={16} /> },
+    { label: t.generator, href: "#generator", icon: <FileText size={16} /> },
     { label: t.features, href: "#features", icon: <CheckSquare size={16} /> },
-    { label: t.start, href: "#cta", icon: <Zap size={16} /> },
+    { label: t.access, href: "#cta", icon: <Zap size={16} /> },
   ];
 
   return (
@@ -27,26 +26,16 @@ export function LandingNavbar() {
       containerClassName="lp-container"
       closeMenuLabel={t.closeMenu}
       desktopActions={(
-        <Fragment>
-          <Link href="/login" className="lp-login-link gap-2">
-            {t.login}
-            <ArrowRight size={15} />
-          </Link>
-          <LandingButton href="/login" className="lp-nav-primary">
-            {t.register}
-          </LandingButton>
-        </Fragment>
+        <Link href="/login" className="lp-login-link gap-2">
+          {t.login}
+          <ArrowRight size={15} />
+        </Link>
       )}
       desktopLanguageSwitcher={<LanguageSwitcher hideShortCode />}
       items={navItems}
       menuLabel={t.menu}
       mobileActions={(
-        <Fragment>
-          <LandingButton href="/login" variant="secondary">
-            {t.login}
-          </LandingButton>
-          <LandingButton href="/login">{t.register}</LandingButton>
-        </Fragment>
+        <LandingButton href="/login">{t.login}</LandingButton>
       )}
       mobileDialogLabel={t.menu}
       mobileLanguageSwitcher={<LanguageSwitcher hideShortCode />}

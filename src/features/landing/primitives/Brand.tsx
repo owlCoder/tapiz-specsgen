@@ -8,9 +8,13 @@ export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="lp-brand" aria-label={appConfig.name}>
       <span className="lp-brand-mark" aria-hidden="true">
-        <LogoMark size={compact ? 21 : 24} />
+        <LogoMark size={compact ? 21 : 24} variant="specs" />
       </span>
-      {!compact && <span className="lp-brand-name">{appConfig.name}</span>}
+      {!compact && (
+        <span className="lp-brand-name">
+          Tapiz <span style={{ color: "var(--lp-accent)" }}>Specs</span>
+        </span>
+      )}
     </Link>
   );
 }

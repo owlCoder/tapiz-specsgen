@@ -12,14 +12,6 @@ export const emailSchema = z.string().trim().toLowerCase().email("Neispravan ema
 
 export const passwordSchema = z.string().min(8, "Lozinka mora imati bar 8 znakova");
 
-export const registerSchema = z.object({
-  firstName: nameSchema,
-  lastName: nameSchema,
-  email: emailSchema,
-  password: passwordSchema,
-});
-export type RegisterInput = z.infer<typeof registerSchema>;
-
 export const updateProfileSchema = z.object({
   firstName: nameSchema,
   lastName: nameSchema,
@@ -32,9 +24,3 @@ export const changePasswordSchema = z.object({
   newPassword: passwordSchema,
 });
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
-
-export const loginSchema = z.object({
-  email: emailSchema,
-  password: z.string().min(1, "Unesite lozinku"),
-});
-export type LoginInput = z.infer<typeof loginSchema>;

@@ -23,7 +23,7 @@ export function SettingsInfoSection() {
     <div className="mx-auto max-w-lg animate-in fade-in duration-200">
       <div className="mb-8 flex flex-col items-center pt-2 text-center">
         <div className="mb-4 grid h-18 w-18 place-items-center border border-primary-300 bg-(--color-icon-bg) text-primary-300">
-          <LogoMark size={56} />
+          <LogoMark size={56} variant="specs" />
         </div>
         <h2 className="mb-1 text-xl font-bold text-txt-1">{t.productTitle}</h2>
         <span className="mt-3 border border-primary-300/35 bg-primary-300/8 px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-widest text-primary-300">

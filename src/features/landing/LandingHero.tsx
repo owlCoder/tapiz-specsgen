@@ -10,13 +10,13 @@ export function LandingHero() {
   const t = dict.landing.hero;
 
   const metrics = [
-    { value: "FTN forma", label: t.metricAuth },
+    { value: "1 → N", label: t.metricVariants },
     { value: "PDF + MD", label: t.metricOutput },
-    { value: "Po grupama", label: t.metricTemplates },
+    { value: "MOD + SCN", label: t.metricStructure },
   ];
 
   return (
-    <section className="lp-hero" id="templates">
+    <section className="lp-hero" id="generator">
       <div className="lp-hero-grid" aria-hidden="true" />
       <div className="lp-orb lp-orb-a" aria-hidden="true" />
       <div className="lp-orb lp-orb-b" aria-hidden="true" />
