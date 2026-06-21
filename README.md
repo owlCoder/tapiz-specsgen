@@ -47,7 +47,7 @@ Bez `LMS_*` env promenljivih SSO dugme se ne prikazuje — lokalni dev radi i be
 ## SSO (Tapiz LMS)
 
 OAuth klijent `tapiz-specsgen` mora biti registrovan u `tapiz-rest-api` `OAUTH_CLIENTS`
-sa `redirect_uris: ["https://specsgen.vercel.app/api/auth/callback/tapiz-lms"]`.
+sa `redirect_uris: ["https://tapiz-specsgen.vercel.app/api/auth/callback/tapiz-lms"]`.
 Vidi `.env.example` za pun spisak `LMS_*` promenljivih.
 
 ## Provere
@@ -59,4 +59,4 @@ npm run lint && npm run typecheck && npm run build
 ## Deploy (Vercel + Aiven MySQL)
 
 Env: `DATABASE_URL`, `DATABASE_SSL_CA_BASE64`, `AUTH_SECRET`, `AUTH_TRUST_HOST=true`,
-4× `LMS_*`. Health endpoint: `GET /api/health`. Prod: `https://specsgen.vercel.app`.
+4× `LMS_*`. Health endpoint: `GET /api/health`. Prod: `https://tapiz-specsgen.vercel.app`.
