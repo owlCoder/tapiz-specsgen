@@ -11,6 +11,7 @@ import {
   Home,
   LogoMark,
   SidePanel,
+  Users,
   X,
 } from "@tapizlabs/ui";
 import type { AppSettings, ArchiveEntry, Course, CourseInput } from "../types/spec.types";
@@ -20,10 +21,11 @@ import { Generate } from "./Generate";
 import { Editor } from "./Editor";
 import { ArchiveView } from "./ArchiveView";
 import { SettingsView } from "./SettingsView";
+import { ShareView } from "./ShareView";
 import {
+  copyTemplateAction,
   createCourseAction,
   deleteCourseAction,
-  loadTemplateCoursesAction,
   updateCourseAction,
 } from "@/lib/actions/courses.actions";
 import { logoutAction } from "@/lib/actions/auth.actions";
@@ -35,7 +37,7 @@ import pkg from "../../../../package.json";
 
 const APP_VERSION = (pkg as { version?: string }).version ?? "0.1.0";
 
-type Panel = "edit" | "settings" | "archive" | "generate" | null;
+type Panel = "edit" | "settings" | "archive" | "generate" | "share" | null;
 
 function emptyCourse(): Course {
   return {
@@ -68,10 +70,17 @@ interface Props {
   initialSettings: AppSettings;
   initialCourses: Course[];
   initialArchive: ArchiveEntry[];
+  templateCourses: Course[];
   user: { name: string; id: string };
 }
 
-export function SpecGenApp({ initialSettings, initialCourses, initialArchive, user }: Props) {
+export function SpecGenApp({
+  initialSettings,
+  initialCourses,
+  initialArchive,
+  templateCourses,
+  user,
+}: Props) {
   const { dict } = useI18n();
   const t = dict.specsgen;
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
@@ -80,8 +89,9 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
   const [panel, setPanel] = useState<Panel>(null);
   const [editing, setEditing] = useState<Course | null>(null);
   const [genId, setGenId] = useState<string | null>(null);
+  const [shareCourse, setShareCourse] = useState<Course | null>(null);
   const [saving, setSaving] = useState(false);
-  const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [templateBusyAbbr, setTemplateBusyAbbr] = useState<string | null>(null);
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -98,6 +108,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
     setPanel(null);
     setEditing(null);
     setGenId(null);
+    setShareCourse(null);
   };
 
   const openSettings = () => setPanel("settings");
@@ -146,12 +157,20 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
     setCourses((p) => p.filter((x) => x.id !== id));
   };
 
-  const loadTemplates = async () => {
-    setTemplatesLoading(true);
-    const result = await loadTemplateCoursesAction();
-    setTemplatesLoading(false);
+  const copyTemplate = async (abbr: string) => {
+    setTemplateBusyAbbr(abbr);
+    const result = await copyTemplateAction(abbr);
+    setTemplateBusyAbbr(null);
     if (!result.ok) return;
-    setCourses(result.data);
+    const created = result.data;
+    setCourses((p) => [...p, created]);
+    // Kopirano u moje + odmah otvori editor (kao tapiz-boards "Iskoristi").
+    startEdit(created);
+  };
+
+  const openShare = (c: Course) => {
+    setShareCourse(c);
+    setPanel("share");
   };
 
   const toggleSidebarCollapsed = () => {
@@ -215,6 +234,7 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
   const dashboardEl = (
     <Dashboard
       courses={courses}
+      templates={templateCourses}
       archive={archive}
       settings={settings}
       userName={user.name}
@@ -223,8 +243,9 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
       onDup={dupCourse}
       onDelete={deleteCourse}
       onGenerate={(id) => { setGenId(id); setPanel("generate"); }}
-      onLoadTemplates={loadTemplates}
-      templatesLoading={templatesLoading}
+      onShare={openShare}
+      onUseTemplate={copyTemplate}
+      templateBusyAbbr={templateBusyAbbr}
       onOpenArchive={() => setPanel("archive")}
       onOpenSettings={openSettings}
     />
@@ -363,6 +384,17 @@ export function SpecGenApp({ initialSettings, initialCourses, initialArchive, us
           archive={archive}
           onDeleted={(id) => setArchive((p) => p.filter((x) => x.id !== id))}
         />
+      </SidePanel>
+
+      <SidePanel
+        isOpen={panel === "share" && shareCourse !== null}
+        onClose={closePanel}
+        title={t.share.title}
+        subtitle={shareCourse?.name ?? t.share.subtitle}
+        icon={<Users size={18} />}
+        width="md"
+      >
+        {shareCourse && <ShareView courseId={shareCourse.id} />}
       </SidePanel>
 
       <SidePanel

@@ -1,4 +1,5 @@
 import { LoginForm } from "@/features/auth/LoginForm";
+import { lmsSsoEnabled } from "@/lib/auth";
 import { getDict } from "@/i18n/server";
 import type { Dict } from "@/i18n/dictionaries";
 
@@ -25,5 +26,5 @@ export default async function LoginPage({
   const params = await searchParams;
   const dict = await getDict();
   const ssoError = params.error ? ssoErrorMessage(params.error, dict.auth.ssoErrors) : null;
-  return <LoginForm ssoError={ssoError} />;
+  return <LoginForm ssoError={ssoError} ssoEnabled={lmsSsoEnabled} />;
 }

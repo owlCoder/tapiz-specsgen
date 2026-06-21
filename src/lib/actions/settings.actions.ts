@@ -7,8 +7,8 @@ import type { AppSettings } from "@/features/specsgen/types/spec.types";
 
 export async function getSettingsAction(): Promise<ActionResult<AppSettings>> {
   try {
-    await requireAdmin();
-    const settings = await settingsService.getOrCreate();
+    const user = await requireAdmin();
+    const settings = await settingsService.getOrCreateFor(user.id);
     return ok(settings);
   } catch {
     return fail("Greška pri učitavanju postavki");
@@ -17,8 +17,8 @@ export async function getSettingsAction(): Promise<ActionResult<AppSettings>> {
 
 export async function updateSettingsAction(data: AppSettings): Promise<ActionResult<AppSettings>> {
   try {
-    await requireAdmin();
-    const settings = await settingsService.update(data);
+    const user = await requireAdmin();
+    const settings = await settingsService.updateFor(user.id, data);
     return ok(settings);
   } catch {
     return fail("Greška pri čuvanju postavki");

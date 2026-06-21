@@ -1,7 +1,7 @@
-import { eq, count } from "drizzle-orm";
+import { and, count, eq, or, sql } from "drizzle-orm";
 import { db } from "@/infrastructure/db/client";
-import { courses } from "@/infrastructure/db/schema";
-import type { ICoursesRepo } from "@/application/ports/courses.port";
+import { courseAssistants, courses, users } from "@/infrastructure/db/schema";
+import type { ICourseShareRepo, ICoursesRepo } from "@/application/ports/courses.port";
 import type { Course, CourseInput } from "@/features/specsgen/types/spec.types";
 
 function toBoolean(val: number | null | undefined): boolean {
@@ -11,6 +11,7 @@ function toBoolean(val: number | null | undefined): boolean {
 function mapRow(row: typeof courses.$inferSelect): Course {
   return {
     id: row.id,
+    ownerId: row.ownerId,
     name: row.name,
     abbr: row.abbr,
     yearOfStudy: row.yearOfStudy,
@@ -35,10 +36,71 @@ function mapRow(row: typeof courses.$inferSelect): Course {
   };
 }
 
+function insertValues(id: string, data: CourseInput, ownerId: string) {
+  return {
+    id,
+    ownerId,
+    name: data.name,
+    abbr: data.abbr,
+    yearOfStudy: data.yearOfStudy,
+    semester: data.semester,
+    projectType: data.projectType,
+    teamSize: data.teamSize,
+    description: data.description,
+    techStack: data.techStack,
+    usesAgileBoard: data.usesAgileBoard ? 1 : 0,
+    agileTool: data.agileTool,
+    optionalCount: data.optionalCount,
+    varyByTeam: data.varyByTeam ? 1 : 0,
+    numTeams: data.numTeams,
+    entityVarMin: data.entityVarMin,
+    entityVarMax: data.entityVarMax,
+    modules: data.modules,
+    scenarios: data.scenarios,
+    nonFunctional: data.nonFunctional,
+    deliverables: data.deliverables,
+    grading: data.grading,
+    notes: data.notes,
+  };
+}
+
 export const coursesRepo: ICoursesRepo = {
-  async findAll() {
-    const rows = await db.select().from(courses).orderBy(courses.createdAt);
-    return rows.map(mapRow);
+  async findAllForUser(userId: string) {
+    // Kursevi koje user poseduje ILI mu je neko podelio. Join na users za ime
+    // vlasnika (prikaz "Od: X" na podeljenim kursevima).
+    const rows = await db
+      .select({
+        course: courses,
+        ownerFirst: users.firstName,
+        ownerLast: users.lastName,
+      })
+      .from(courses)
+      .innerJoin(users, eq(users.id, courses.ownerId))
+      .leftJoin(
+        courseAssistants,
+        and(eq(courseAssistants.courseId, courses.id), eq(courseAssistants.userId, userId)),
+      )
+      .where(or(eq(courses.ownerId, userId), eq(courseAssistants.userId, userId)))
+      .orderBy(courses.createdAt);
+
+    return rows.map(({ course, ownerFirst, ownerLast }) => ({
+      ...mapRow(course),
+      access: course.ownerId === userId ? ("owner" as const) : ("shared" as const),
+      ownerName: `${ownerFirst} ${ownerLast}`.trim(),
+    }));
+  },
+
+  async findById(id: string) {
+    const [row] = await db.select().from(courses).where(eq(courses.id, id));
+    return row ? mapRow(row) : null;
+  },
+
+  async findOwnerId(id: string) {
+    const [row] = await db
+      .select({ ownerId: courses.ownerId })
+      .from(courses)
+      .where(eq(courses.id, id));
+    return row?.ownerId ?? null;
   },
 
   async count() {
@@ -46,32 +108,9 @@ export const coursesRepo: ICoursesRepo = {
     return value;
   },
 
-  async create(data: CourseInput) {
+  async create(data: CourseInput, ownerId: string) {
     const id = crypto.randomUUID();
-    await db.insert(courses).values({
-      id,
-      name: data.name,
-      abbr: data.abbr,
-      yearOfStudy: data.yearOfStudy,
-      semester: data.semester,
-      projectType: data.projectType,
-      teamSize: data.teamSize,
-      description: data.description,
-      techStack: data.techStack,
-      usesAgileBoard: data.usesAgileBoard ? 1 : 0,
-      agileTool: data.agileTool,
-      optionalCount: data.optionalCount,
-      varyByTeam: data.varyByTeam ? 1 : 0,
-      numTeams: data.numTeams,
-      entityVarMin: data.entityVarMin,
-      entityVarMax: data.entityVarMax,
-      modules: data.modules,
-      scenarios: data.scenarios,
-      nonFunctional: data.nonFunctional,
-      deliverables: data.deliverables,
-      grading: data.grading,
-      notes: data.notes,
-    });
+    await db.insert(courses).values(insertValues(id, data, ownerId));
     const [row] = await db.select().from(courses).where(eq(courses.id, id));
     return mapRow(row);
   },
@@ -111,10 +150,48 @@ export const coursesRepo: ICoursesRepo = {
   async delete(id: string) {
     await db.delete(courses).where(eq(courses.id, id));
   },
+};
 
-  async insertMany(data: CourseInput[]) {
-    for (const d of data) {
-      await coursesRepo.create(d);
-    }
+export const courseShareRepo: ICourseShareRepo = {
+  async listAssistants(courseId: string) {
+    const rows = await db
+      .select({
+        userId: users.id,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+      })
+      .from(courseAssistants)
+      .innerJoin(users, eq(users.id, courseAssistants.userId))
+      .where(eq(courseAssistants.courseId, courseId))
+      .orderBy(courseAssistants.createdAt);
+    return rows.map((r) => ({
+      userId: r.userId,
+      name: `${r.firstName} ${r.lastName}`.trim(),
+      email: r.email,
+    }));
+  },
+
+  async add(courseId: string, userId: string) {
+    // Idempotentno — unique(courseId,userId) sprečava duplikate.
+    await db
+      .insert(courseAssistants)
+      .values({ id: crypto.randomUUID(), courseId, userId })
+      .onDuplicateKeyUpdate({ set: { courseId: sql`course_id` } });
+  },
+
+  async remove(courseId: string, userId: string) {
+    await db
+      .delete(courseAssistants)
+      .where(and(eq(courseAssistants.courseId, courseId), eq(courseAssistants.userId, userId)));
+  },
+
+  async isSharedWith(courseId: string, userId: string) {
+    const rows = await db
+      .select({ id: courseAssistants.id })
+      .from(courseAssistants)
+      .where(and(eq(courseAssistants.courseId, courseId), eq(courseAssistants.userId, userId)))
+      .limit(1);
+    return rows.length > 0;
   },
 };

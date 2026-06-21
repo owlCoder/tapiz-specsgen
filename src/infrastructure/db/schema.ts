@@ -8,6 +8,7 @@ import {
   text,
   timestamp,
   tinyint,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
 import type { Deliverable, GradingItem, Module, Scenario, TechStack } from "@/features/specsgen/types/spec.types";
@@ -61,10 +62,14 @@ export const appEvents = mysqlTable(
   (t) => [index("ix_app_events_actor").on(t.actorId, t.createdAt)],
 );
 
-// ─── App Settings (singleton, id = '1') ───────────────────────────────────────
+// ─── App Settings (per-asistent, 1 red po owneru) ─────────────────────────────
 
 export const appSettings = mysqlTable("app_settings", {
-  id: varchar("id", { length: 4 }).primaryKey().default("1"),
+  id: id(),
+  ownerId: varchar("owner_id", { length: 36 })
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
   university: varchar("university", { length: 255 }).notNull().default(""),
   faculty: varchar("faculty", { length: 255 }).notNull().default(""),
   department: varchar("department", { length: 255 }).notNull().default(""),
@@ -76,8 +81,13 @@ export const appSettings = mysqlTable("app_settings", {
 
 // ─── Courses ──────────────────────────────────────────────────────────────────
 
-export const courses = mysqlTable("courses", {
+export const courses = mysqlTable(
+  "courses",
+  {
   id: id(),
+  ownerId: varchar("owner_id", { length: 36 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
   abbr: varchar("abbr", { length: 20 }).notNull().default(""),
   yearOfStudy: int("year_of_study").notNull().default(3),
@@ -101,7 +111,31 @@ export const courses = mysqlTable("courses", {
   notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
-});
+  },
+  (t) => [index("ix_courses_owner").on(t.ownerId)],
+);
+
+// ─── Course sharing (ko-asistenti) ───────────────────────────────────────────
+// M:N veza kurs ↔ asistent. Owner deli svoj kurs sa drugim asistentom; deljeni
+// asistent ima čitanje + edit + generisanje (NE brisanje, NE upravljanje share-om).
+
+export const courseAssistants = mysqlTable(
+  "course_assistants",
+  {
+    id: id(),
+    courseId: varchar("course_id", { length: 36 })
+      .notNull()
+      .references(() => courses.id, { onDelete: "cascade" }),
+    userId: varchar("user_id", { length: 36 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("ux_course_assistant").on(t.courseId, t.userId),
+    index("ix_course_assistants_user").on(t.userId),
+  ],
+);
 
 // ─── Archive Entries ──────────────────────────────────────────────────────────
 
@@ -109,6 +143,9 @@ export const archiveEntries = mysqlTable(
   "archive_entries",
   {
     id: id(),
+    ownerId: varchar("owner_id", { length: 36 })
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
     courseId: varchar("course_id", { length: 36 }),
     courseName: varchar("course_name", { length: 255 }).notNull(),
     abbr: varchar("abbr", { length: 20 }).notNull().default(""),
@@ -116,7 +153,10 @@ export const archiveEntries = mysqlTable(
     faculty: varchar("faculty", { length: 255 }).notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (t) => [index("ix_archive_entries_year").on(t.academicYear)],
+  (t) => [
+    index("ix_archive_entries_year").on(t.academicYear),
+    index("ix_archive_entries_owner").on(t.ownerId),
+  ],
 );
 
 // ─── Archive Variants (per group/team) ───────────────────────────────────────

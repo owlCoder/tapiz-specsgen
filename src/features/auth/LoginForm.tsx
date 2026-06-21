@@ -6,8 +6,10 @@ import { useI18n } from "@/i18n/I18nProvider";
 
 export function LoginForm({
   ssoError,
+  ssoEnabled,
 }: {
   ssoError: string | null;
+  ssoEnabled: boolean;
 }) {
   const { dict } = useI18n();
   const t = dict.auth;
@@ -30,22 +32,24 @@ export function LoginForm({
 
       <div className="mb-6 animate-fade-in-up [animation-delay:100ms]">
         <InfoBanner
-          text={t.ssoErrors.lmsRole}
-          variant="info"
+          text={ssoEnabled ? t.ssoErrors.lmsRole : t.ssoErrors.configuration}
+          variant={ssoEnabled ? "info" : "warn"}
         />
       </div>
 
-      <form action={lmsLoginAction} className="animate-fade-in-up [animation-delay:200ms]">
-        <Button
-          type="submit"
-          variant="outline-primary"
-          fullWidth
-          size="lg"
-          icon={<LogoMark size={18} tone="outline" variant="specs" />}
-        >
-          {t.lmsLogin}
-        </Button>
-      </form>
+      {ssoEnabled && (
+        <form action={lmsLoginAction} className="animate-fade-in-up [animation-delay:200ms]">
+          <Button
+            type="submit"
+            variant="outline-primary"
+            fullWidth
+            size="lg"
+            icon={<LogoMark size={18} tone="outline" />}
+          >
+            {t.lmsLogin}
+          </Button>
+        </form>
+      )}
     </div>
   );
 }

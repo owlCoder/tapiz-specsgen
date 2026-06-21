@@ -3,11 +3,11 @@ import { SEED_SETTINGS } from "@/features/specsgen/lib/seed";
 import type { AppSettings } from "@/features/specsgen/types/spec.types";
 
 export const settingsService = {
-  async getOrCreate(): Promise<AppSettings> {
-    return settingsRepo.getOrCreate(SEED_SETTINGS);
+  async getOrCreateFor(ownerId: string): Promise<AppSettings> {
+    return settingsRepo.getOrCreateFor(ownerId, SEED_SETTINGS);
   },
 
-  async update(data: AppSettings): Promise<AppSettings> {
-    return settingsRepo.update(data);
+  async updateFor(ownerId: string, data: AppSettings): Promise<AppSettings> {
+    return settingsRepo.updateFor(ownerId, data);
   },
 };

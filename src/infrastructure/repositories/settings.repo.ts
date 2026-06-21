@@ -16,11 +16,12 @@ function mapRow(row: typeof appSettings.$inferSelect): AppSettings {
 }
 
 export const settingsRepo: ISettingsRepo = {
-  async getOrCreate(defaults: AppSettings) {
-    const rows = await db.select().from(appSettings).where(eq(appSettings.id, "1"));
+  async getOrCreateFor(ownerId: string, defaults: AppSettings) {
+    const rows = await db.select().from(appSettings).where(eq(appSettings.ownerId, ownerId));
     if (rows.length > 0) return mapRow(rows[0]);
     await db.insert(appSettings).values({
-      id: "1",
+      id: crypto.randomUUID(),
+      ownerId,
       university: defaults.university,
       faculty: defaults.faculty,
       department: defaults.department,
@@ -31,7 +32,7 @@ export const settingsRepo: ISettingsRepo = {
     return defaults;
   },
 
-  async update(data: AppSettings) {
+  async updateFor(ownerId: string, data: AppSettings) {
     await db
       .update(appSettings)
       .set({
@@ -42,7 +43,7 @@ export const settingsRepo: ISettingsRepo = {
         academicYear: data.academicYear,
         integrityNote: data.integrityNote ? 1 : 0,
       })
-      .where(eq(appSettings.id, "1"));
+      .where(eq(appSettings.ownerId, ownerId));
     return data;
   },
 };

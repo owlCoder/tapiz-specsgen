@@ -17,6 +17,7 @@ import { fmt, INTL_LOCALES } from "@/i18n/config";
 
 interface Props {
   courses: Course[];
+  templates: Course[];
   archive: ArchiveEntry[];
   settings: AppSettings;
   userName: string;
@@ -25,8 +26,9 @@ interface Props {
   onDup: (c: Course) => void;
   onDelete: (id: string) => void;
   onGenerate: (id: string) => void;
-  onLoadTemplates: () => void;
-  templatesLoading?: boolean;
+  onShare: (c: Course) => void;
+  onUseTemplate: (abbr: string) => void;
+  templateBusyAbbr?: string | null;
   onOpenArchive: () => void;
   onOpenSettings: () => void;
 }
@@ -130,6 +132,7 @@ function QuickAction({
 
 export function Dashboard({
   courses,
+  templates,
   archive,
   settings,
   userName,
@@ -138,8 +141,9 @@ export function Dashboard({
   onDup,
   onDelete,
   onGenerate,
-  onLoadTemplates,
-  templatesLoading = false,
+  onShare,
+  onUseTemplate,
+  templateBusyAbbr = null,
   onOpenArchive,
   onOpenSettings,
 }: Props) {
@@ -293,13 +297,15 @@ export function Dashboard({
         <SectionHead num="04" title={t.sectionCourses} />
         <Listing
           courses={courses}
+          templates={templates}
           onNew={onNew}
           onEdit={onEdit}
           onDup={onDup}
           onDelete={onDelete}
           onGenerate={onGenerate}
-          onLoadTemplates={onLoadTemplates}
-          templatesLoading={templatesLoading}
+          onShare={onShare}
+          onUseTemplate={onUseTemplate}
+          templateBusyAbbr={templateBusyAbbr}
           hideHeader
         />
       </section>

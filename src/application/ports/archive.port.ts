@@ -10,7 +10,8 @@ export interface NewArchiveEntry {
 }
 
 export interface IArchiveRepo {
-  findAll(): Promise<ArchiveEntry[]>;
-  create(data: NewArchiveEntry): Promise<ArchiveEntry>;
+  findAllForUser(userId: string): Promise<ArchiveEntry[]>;
+  create(data: NewArchiveEntry, ownerId: string): Promise<ArchiveEntry>;
+  findOwnerId(id: string): Promise<string | null>;
   delete(id: string): Promise<void>;
 }

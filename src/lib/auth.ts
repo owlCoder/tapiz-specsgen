@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import type { OAuthConfig } from "next-auth/providers";
-import { tapizLmsProvider } from "@tapizlabs/identity/sso";
+import { isLmsSsoEnabled, tapizLmsProvider } from "@tapizlabs/identity/sso";
 import type { LmsProfile } from "@tapizlabs/identity";
 import { authConfig } from "./auth.config";
 import { fullName } from "@/domain/types";
@@ -20,11 +20,13 @@ const lmsProvider = {
   },
 } as OAuthConfig<LmsProfile>;
 
-export const lmsSsoEnabled = true;
+// Provider se registruje samo kad su sve LMS_* env promenljive postavljene.
+// Bez njih (lokalni dev) SSO dugme se ne prikazuje i ne pravi se 500 na signin.
+export const lmsSsoEnabled = isLmsSsoEnabled(process.env);
 
 export const { handlers, auth, signIn, signOut, unstable_update: updateSession } = NextAuth({
   ...authConfig,
-  providers: [lmsProvider],
+  providers: lmsSsoEnabled ? [lmsProvider] : [],
   callbacks: {
     ...authConfig.callbacks,
     async signIn({ user, account, profile }) {

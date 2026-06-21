@@ -3,18 +3,20 @@ import { SEED_COURSES } from "@/features/specsgen/lib/seed";
 import type { Course, CourseInput } from "@/features/specsgen/types/spec.types";
 
 export const coursesService = {
-  async getAll(): Promise<Course[]> {
-    return coursesRepo.findAll();
+  /** Kursevi vidljivi useru: njegovi (owner) + podeljeni sa njim (shared). */
+  async getAllForUser(userId: string): Promise<Course[]> {
+    return coursesRepo.findAllForUser(userId);
   },
 
-  /** Ubacuje polazne template predmete i vraća kompletnu, ažuriranu listu. */
-  async loadTemplates(): Promise<Course[]> {
-    await coursesRepo.insertMany(SEED_COURSES);
-    return coursesRepo.findAll();
+  async create(data: CourseInput, ownerId: string): Promise<Course> {
+    return coursesRepo.create(data, ownerId);
   },
 
-  async create(data: CourseInput): Promise<Course> {
-    return coursesRepo.create(data);
+  /** "Iskoristi template": kopira javni read-only template kao privatan kurs usera. */
+  async createFromTemplate(abbr: string, ownerId: string): Promise<Course> {
+    const tpl = SEED_COURSES.find((c) => c.abbr === abbr);
+    if (!tpl) throw new Error("Template nije pronađen");
+    return coursesRepo.create(tpl, ownerId);
   },
 
   async update(id: string, data: CourseInput): Promise<Course> {

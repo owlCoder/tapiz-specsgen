@@ -1,6 +1,6 @@
 import type { AppSettings } from "@/features/specsgen/types/spec.types";
 
 export interface ISettingsRepo {
-  getOrCreate(defaults: AppSettings): Promise<AppSettings>;
-  update(data: AppSettings): Promise<AppSettings>;
+  getOrCreateFor(ownerId: string, defaults: AppSettings): Promise<AppSettings>;
+  updateFor(ownerId: string, data: AppSettings): Promise<AppSettings>;
 }

@@ -5,10 +5,11 @@ import type { IArchiveRepo, NewArchiveEntry } from "@/application/ports/archive.
 import type { ArchiveEntry } from "@/features/specsgen/types/spec.types";
 
 export const archiveRepo: IArchiveRepo = {
-  async findAll() {
+  async findAllForUser(userId: string) {
     const entries = await db
       .select()
       .from(archiveEntries)
+      .where(eq(archiveEntries.ownerId, userId))
       .orderBy(archiveEntries.createdAt);
     const result: ArchiveEntry[] = [];
     for (const entry of entries) {
@@ -36,10 +37,11 @@ export const archiveRepo: IArchiveRepo = {
     return result.reverse();
   },
 
-  async create(data: NewArchiveEntry) {
+  async create(data: NewArchiveEntry, ownerId: string) {
     const id = crypto.randomUUID();
     await db.insert(archiveEntries).values({
       id,
+      ownerId,
       courseId: data.courseId ?? undefined,
       courseName: data.courseName,
       abbr: data.abbr,
@@ -80,6 +82,14 @@ export const archiveRepo: IArchiveRepo = {
         markdown: v.markdown,
       })),
     };
+  },
+
+  async findOwnerId(id: string) {
+    const [row] = await db
+      .select({ ownerId: archiveEntries.ownerId })
+      .from(archiveEntries)
+      .where(eq(archiveEntries.id, id));
+    return row?.ownerId ?? null;
   },
 
   async delete(id: string) {

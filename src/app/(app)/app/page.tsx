@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/guards";
 import { coursesService } from "@/application/courses.service";
 import { settingsService } from "@/application/settings.service";
 import { archiveService } from "@/application/archive.service";
+import { SEED_COURSES } from "@/features/specsgen/lib/seed";
 import { SpecGenApp } from "@/features/specsgen";
 
 export const dynamic = "force-dynamic";
@@ -16,16 +17,20 @@ export default async function AppHomePage() {
   }
 
   const [settings, courses, archive] = await Promise.all([
-    settingsService.getOrCreate(),
-    coursesService.getAll(),
-    archiveService.getAll(),
+    settingsService.getOrCreateFor(user.id),
+    coursesService.getAllForUser(user.id),
+    archiveService.getAllForUser(user.id),
   ]);
+
+  // Javni read-only template-i (ODP/OIB/ERS) — vidljivi svima, iz koda (ne iz DB).
+  const templateCourses = SEED_COURSES.map((c) => ({ ...c, id: `tpl:${c.abbr}` }));
 
   return (
     <SpecGenApp
       initialSettings={settings}
       initialCourses={courses}
       initialArchive={archive}
+      templateCourses={templateCourses}
       user={{ name: user.name, id: user.id }}
     />
   );

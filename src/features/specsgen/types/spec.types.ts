@@ -45,6 +45,12 @@ export interface TechStack {
 
 export interface Course {
   id: string;
+  /** Vlasnik kursa (asistent koji ga je kreirao). Prazno na in-memory template-ima. */
+  ownerId?: string;
+  /** "owner" = moj kurs; "shared" = neko mi ga je podelio (edit DA, brisanje/share NE). */
+  access?: "owner" | "shared";
+  /** Puno ime vlasnika — prikaz na podeljenim kursevima ("Od: X"). */
+  ownerName?: string;
   name: string;
   abbr: string;
   yearOfStudy: number;
