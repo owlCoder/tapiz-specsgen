@@ -46,7 +46,7 @@ Bez `LMS_*` env promenljivih SSO dugme se ne prikazuje — lokalni dev radi i be
 
 ## SSO (Tapiz LMS)
 
-OAuth klijent `tapiz-specsgen` mora biti registrovan u `tapiz-rest-api` `OAUTH_CLIENTS`
+OAuth klijent `tapiz-specsgen` mora biti registrovan u `tapiz-lms/apps/api` `OAUTH_CLIENTS`
 sa `redirect_uris: ["https://tapiz-specsgen.vercel.app/api/auth/callback/tapiz-lms"]`.
 Vidi `.env.example` za pun spisak `LMS_*` promenljivih.
 
