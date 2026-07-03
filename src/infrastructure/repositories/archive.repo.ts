@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "@/infrastructure/db/client";
 import { archiveEntries, archiveVariants } from "@/infrastructure/db/schema";
 import type { IArchiveRepo, NewArchiveEntry } from "@/application/ports/archive.port";
@@ -11,29 +11,37 @@ export const archiveRepo: IArchiveRepo = {
       .from(archiveEntries)
       .where(eq(archiveEntries.ownerId, userId))
       .orderBy(archiveEntries.createdAt);
-    const result: ArchiveEntry[] = [];
-    for (const entry of entries) {
-      const variants = await db
-        .select()
-        .from(archiveVariants)
-        .where(eq(archiveVariants.entryId, entry.id))
-        .orderBy(archiveVariants.teamIndex);
-      result.push({
-        id: entry.id,
-        courseId: entry.courseId ?? null,
-        courseName: entry.courseName,
-        abbr: entry.abbr,
-        academicYear: entry.academicYear,
-        faculty: entry.faculty,
-        createdAt: entry.createdAt.toISOString(),
-        variants: variants.map((v) => ({
-          teamIndex: v.teamIndex,
-          code: v.code,
-          scenario: v.scenarioName,
-          markdown: v.markdown,
-        })),
-      });
+
+    if (entries.length === 0) return [];
+
+    const allVariants = await db
+      .select()
+      .from(archiveVariants)
+      .where(inArray(archiveVariants.entryId, entries.map((e) => e.id)))
+      .orderBy(archiveVariants.teamIndex);
+
+    const variantsByEntry = new Map<string, typeof allVariants>();
+    for (const v of allVariants) {
+      const bucket = variantsByEntry.get(v.entryId);
+      if (bucket) bucket.push(v);
+      else variantsByEntry.set(v.entryId, [v]);
     }
+
+    const result: ArchiveEntry[] = entries.map((entry) => ({
+      id: entry.id,
+      courseId: entry.courseId ?? null,
+      courseName: entry.courseName,
+      abbr: entry.abbr,
+      academicYear: entry.academicYear,
+      faculty: entry.faculty,
+      createdAt: entry.createdAt.toISOString(),
+      variants: (variantsByEntry.get(entry.id) ?? []).map((v) => ({
+        teamIndex: v.teamIndex,
+        code: v.code,
+        scenario: v.scenarioName,
+        markdown: v.markdown,
+      })),
+    }));
     return result.reverse();
   },
 
@@ -48,15 +56,17 @@ export const archiveRepo: IArchiveRepo = {
       academicYear: data.academicYear,
       faculty: data.faculty,
     });
-    for (const v of data.variants) {
-      await db.insert(archiveVariants).values({
-        id: crypto.randomUUID(),
-        entryId: id,
-        teamIndex: v.teamIndex,
-        code: v.code,
-        scenarioName: v.scenario,
-        markdown: v.markdown,
-      });
+    if (data.variants.length > 0) {
+      await db.insert(archiveVariants).values(
+        data.variants.map((v) => ({
+          id: crypto.randomUUID(),
+          entryId: id,
+          teamIndex: v.teamIndex,
+          code: v.code,
+          scenarioName: v.scenario,
+          markdown: v.markdown,
+        })),
+      );
     }
     const [entry] = await db
       .select()
