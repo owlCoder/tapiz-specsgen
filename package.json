@@ -17,7 +17,7 @@
     "@tapizlabs/app-kit": "^0.1.2",
     "@tapizlabs/identity": "^0.1.2",
     "@tapizlabs/telemetry": "^0.1.1",
-    "@tapizlabs/ui": "^0.2.29",
+    "@tapizlabs/ui": "^0.2.30",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.23.0",
