@@ -8,6 +8,7 @@ Generator specifikacija projektnih zadataka za nastavnike i asistente. Samo `ass
 - MySQL + Drizzle ORM (`mysql2`, Node runtime — NIKAD `runtime = "edge"` na kodu koji dira bazu)
 - Auth.js v5: **isključivo Tapiz LMS SSO** (nema credentials prijave, nema registracije)
 - `lucide-react` za ikone (dodat ručno — nije u template-u)
+- `@tapizlabs/ui@^0.2.30` (još uvek pre-2.0 — repo NIJE migriran na Brand 2.0 "Ink & Ember"/skinove; migracija pri sledećem UI zahvatu)
 - **`@tapizlabs/app-kit`** — `ActionResult`/`ok`/`fail`/`isOk` (re-export iz `src/lib/action-result.ts`)
 - **`@tapizlabs/identity/sso`** — `tapizLmsProvider`, `isLmsSsoEnabled`
 - i18n: 5 lokaliteta (sr, sr-Cyrl, en, fr, hu), `Dict = typeof sr` garantija kompletnosti
