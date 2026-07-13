@@ -1,5 +1,8 @@
 # Tapiz Specs (`tapiz-specsgen`)
 
+> **DEPRECATED — više se ne održava.** Pristup ostaje moguć (repo i deploy nisu ugašeni), ali ne
+> očekuj nove feature-e, migracije (npr. Brand 2.0) ili fixove osim po eksplicitnom zahtevu.
+
 Generator specifikacija projektnih zadataka za nastavnike i asistente. Iz definicije
 predmeta (moduli, scenariji, entiteti, nefunkcionalni zahtevi, način ocenjivanja)
 deterministički generiše **personalizovane varijante** zadataka po studentu i izvozi ih

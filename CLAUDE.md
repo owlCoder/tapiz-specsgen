@@ -1,5 +1,9 @@
 # tapiz-specsgen Rules
 
+> **DEPRECATED — više se ne održava.** Pristup ostaje moguć (repo i deploy nisu ugašeni), ali ne
+> očekuj nove feature-e, migracije (npr. Brand 2.0 "Ink & Ember") ili fixove osim po eksplicitnom
+> zahtevu korisnika.
+
 Generator specifikacija projektnih zadataka za nastavnike i asistente. Samo `assistant` LMS rola ima pristup. Bez localStorage — svi podaci u MySQL.
 
 ## Stack
