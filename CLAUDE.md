@@ -100,3 +100,5 @@ DATABASE_URL="mysql://root:root@localhost:3311/tapiz_specsgen"
 
 - Env: `DATABASE_URL`, `DATABASE_SSL_CA_BASE64`, `AUTH_SECRET`, `AUTH_TRUST_HOST=true`, 4x `LMS_*`
 - Health endpoint: `GET /api/health`
+- Production: `main` branch → `https://tapiz-specsgen.vercel.app`.
+- **Dev preview (added 2026-07-14):** `dev` branch auto-deploys to `https://tapiz-specsgen-git-dev-danijel-jovanovis-projects.vercel.app`. Preview env vars point at LMS's dev preview (`LMS_UI_URL`/`LMS_API_URL` = LMS web/api `dev` preview URLs, separate `LMS_OAUTH_CLIENT_SECRET` registered in LMS API's Preview `OAUTH_CLIENTS`). DB: shares the same `tapizspecsgen` Aiven database as production (same pattern as Boards/Cloud-status dev preview — no real users yet, acceptable risk).
