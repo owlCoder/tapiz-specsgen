@@ -8,6 +8,7 @@
     "dev": "next dev -p 3006",
     "build": "next build",
     "start": "next start -p 3006",
+    "postbuild": "tapiz-sourcemaps upload",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
@@ -16,7 +17,7 @@
   "dependencies": {
     "@tapizlabs/app-kit": "^0.1.2",
     "@tapizlabs/identity": "^0.1.2",
-    "@tapizlabs/telemetry": "^0.1.1",
+    "@tapizlabs/telemetry": "^0.2.1",
     "@tapizlabs/ui": "^0.2.30",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
