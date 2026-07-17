@@ -64,10 +64,8 @@ function ServiceRow({
 }
 
 export default async function StatusPage() {
-  const dbOk = await checkDb();
+  const [dbOk, locale, dict] = await Promise.all([checkDb(), getLocale(), getDict()]);
   const allOk = dbOk;
-  const locale = await getLocale();
-  const dict = await getDict();
   const t = dict.status;
   const badgeLabels = { up: t.operational, down: t.unavailable };
 

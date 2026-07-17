@@ -13,7 +13,6 @@ import {
 } from "@tapizlabs/ui";
 import type { AppSettings, ArchiveEntry, Course } from "../types/spec.types";
 import { buildVariant, generateMarkdown } from "../lib/variant";
-import { printSpecPdf } from "../lib/pdf";
 import { Preview } from "./Preview";
 import { createArchiveEntryAction } from "@/lib/actions/archive.actions";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -100,7 +99,11 @@ export function Generate({ course, settings, onArchived }: Props) {
             size="sm"
             variant="secondary"
             icon={<Pdf size={14} />}
-            onClick={() => printSpecPdf(course, settings, variant)}
+            onClick={() =>
+              void import("../lib/pdf").then(({ printSpecPdf }) =>
+                printSpecPdf(course, settings, variant),
+              )
+            }
           >
             {t.downloadPdf}
           </Button>

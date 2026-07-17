@@ -15,7 +15,6 @@ import {
 } from "@tapizlabs/ui";
 import type { ArchiveEntry } from "../types/spec.types";
 import { deleteArchiveEntryAction } from "@/lib/actions/archive.actions";
-import { printMarkdownPdf } from "../lib/pdf";
 import { useI18n } from "@/i18n/I18nProvider";
 import { fmt, INTL_LOCALES } from "@/i18n/config";
 
@@ -174,12 +173,14 @@ export function ArchiveView({ archive, onDeleted }: Props) {
                   variant="ghost"
                   icon={<Pdf size={14} />}
                   onClick={() =>
-                    printMarkdownPdf({
-                      markdown: viewMd.markdown,
-                      title: `${viewMd.entryAbbr} — ${viewMd.code}`,
-                      faculty: viewMd.faculty,
-                      academicYear: viewMd.entryYear,
-                    })
+                    void import("../lib/pdf").then(({ printMarkdownPdf }) =>
+                      printMarkdownPdf({
+                        markdown: viewMd.markdown,
+                        title: `${viewMd.entryAbbr} — ${viewMd.code}`,
+                        faculty: viewMd.faculty,
+                        academicYear: viewMd.entryYear,
+                      }),
+                    )
                   }
                 />
                 <Button
