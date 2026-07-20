@@ -21,10 +21,16 @@ function ssoErrorMessage(code: string, t: Dict["auth"]["ssoErrors"]): string {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; auto?: string }>;
 }) {
   const params = await searchParams;
   const dict = await getDict();
   const ssoError = params.error ? ssoErrorMessage(params.error, dict.auth.ssoErrors) : null;
-  return <LoginForm ssoError={ssoError} ssoEnabled={lmsSsoEnabled} />;
+  return (
+    <LoginForm
+      ssoError={ssoError}
+      ssoEnabled={lmsSsoEnabled}
+      autoLms={params.auto === "lms"}
+    />
+  );
 }

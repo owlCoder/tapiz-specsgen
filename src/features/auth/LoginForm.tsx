@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Button, FormError, InfoBanner, LogoMark } from "@tapizlabs/ui";
 import { lmsLoginAction } from "@/lib/actions/auth.actions";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -7,12 +8,22 @@ import { useI18n } from "@/i18n/I18nProvider";
 export function LoginForm({
   ssoError,
   ssoEnabled,
+  autoLms,
 }: {
   ssoError: string | null;
   ssoEnabled: boolean;
+  autoLms: boolean;
 }) {
   const { dict } = useI18n();
   const t = dict.auth;
+  const lmsFormRef = useRef<HTMLFormElement>(null);
+
+  // Vault (i drugi first-party spoke-ovi) linkuju ovde sa ?auto=lms — ovaj
+  // efekat "klikne" isto dugme koje bi korisnik ručno kliknuo, jer Auth.js
+  // signin ruta zahteva CSRF cookie koji plain cross-origin <a href> ne nosi.
+  useEffect(() => {
+    if (autoLms && ssoEnabled && !ssoError) lmsFormRef.current?.requestSubmit();
+  }, [autoLms, ssoEnabled, ssoError]);
 
   return (
     <div className="w-full max-w-sm animate-fade-in-up">
@@ -38,7 +49,7 @@ export function LoginForm({
       </div>
 
       {ssoEnabled && (
-        <form action={lmsLoginAction} className="animate-fade-in-up [animation-delay:200ms]">
+        <form ref={lmsFormRef} action={lmsLoginAction} className="animate-fade-in-up [animation-delay:200ms]">
           <Button
             type="submit"
             variant="outline-primary"
