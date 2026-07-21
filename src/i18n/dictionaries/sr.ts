@@ -55,7 +55,7 @@ export const sr = {
       headline2: "Po grupama.",
       headline3: "Bez prepisivanja.",
       description:
-        "Generiši jedinstvene varijante specifikacija projektnih zadataka za svaku grupu — deterministički, iz semestra u semestar.",
+        "Generiši jedinstvene varijante specifikacija projektnih zadataka za svaku grupu, deterministički, iz semestra u semestar.",
       stats: [
         { value: "Po grupama", label: "Anti-prepisivanje" },
         { value: "Moduli + scenariji", label: "Struktura zadatka" },

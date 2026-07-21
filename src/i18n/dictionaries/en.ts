@@ -51,7 +51,7 @@ export const en: Dict = {
       headline2: "Per group.",
       headline3: "No copying.",
       description:
-        "Generate unique specification variants for each student group — deterministically, semester after semester.",
+        "Generate unique specification variants for each student group, deterministically, semester after semester.",
       stats: [
         { value: "Per group", label: "Anti-plagiarism" },
         { value: "Modules + scenarios", label: "Task structure" },

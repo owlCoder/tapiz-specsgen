@@ -51,7 +51,7 @@ export const fr: Dict = {
       headline2: "Par groupe.",
       headline3: "Sans plagiat.",
       description:
-        "Générez des variantes uniques de spécifications pour chaque groupe d'étudiants — de manière déterministe, semestre après semestre.",
+        "Générez des variantes uniques de spécifications pour chaque groupe d'étudiants, de manière déterministe, semestre après semestre.",
       stats: [
         { value: "Par groupe", label: "Anti-plagiat" },
         { value: "Modules + scénarios", label: "Structure du devoir" },

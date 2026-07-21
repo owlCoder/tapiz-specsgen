@@ -51,7 +51,7 @@ export const hu: Dict = {
       headline2: "Csoportonként.",
       headline3: "Másolás nélkül.",
       description:
-        "Egyedi specifikáció-változatokat generál minden diákcsoportnak — determinisztikusan, szemeszterről szemeszterre.",
+        "Egyedi specifikáció-változatokat generál minden diákcsoportnak, determinisztikusan, szemeszterről szemeszterre.",
       stats: [
         { value: "Csoportonként", label: "Plágium-ellenes" },
         { value: "Modulok + forgatókönyvek", label: "Feladatstruktúra" },
